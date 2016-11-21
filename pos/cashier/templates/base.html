@@ -1,0 +1,73 @@
+{% load staticfiles %}
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+    	{% block header %}
+
+    	
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Home One || Catcolate </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- favicon
+		============================================ -->		
+        <link rel="shortcut icon" type="image/x-icon" href="{% static "img/favicon.ico" %} ">		
+		<!-- Google Fonts
+		============================================ -->
+		<link href='https://fonts.googleapis.com/css?family=Poppins:400,500,700,300,600' rel='stylesheet' type='text/css'>	 
+		<!-- <link href='https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css' rel='stylesheet' type='text/css'>	  -->
+		<!-- <script   src="http://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script> 
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>-->
+
+		 <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
+
+	    <link rel="stylesheet" media="all" type="text/css" href="{% static "css/semantic.min.css" %}" />
+	    <script type="text/javascript" src="{% static "js/jquery-1.11.0.js" %}"></script>
+	    <script type="text/javascript" src="{% static "js/semantic.min.js" %}"></script>
+	    <script type="text/javascript" src="{% static "js/angularjs/core/angular.min.js" %}"></script>
+
+		{% endblock %}
+
+	    <style>
+	    	.bigbanner{
+				font-family: 'Fjalla One', sans-serif;
+				font-size:30pt;
+				margin:15px;
+	    	}
+	    </style>
+    </head>
+<body>
+
+<center><div class="bigbanner">CATCOLATE BOARD GAME CAFE</div></center>
+
+{% if user %}
+	<!-- if user login , show his name -->
+<!-- 	HI , <i class="ui icon user"></i>
+			{{user.username}}  
+			<a href="/login/"><button class="ui button"><i class="ui icon login"></i>Login</button></a>
+			<a href="/logout/"><button class="ui button"><i class="ui icon logout"></i>Logout</button></a> -->
+{% else %}		 
+	<!-- if user not login , remind him to login -->
+	<!-- Please Login <a href="/login/">Login</a> -->
+{% endif %}
+
+
+
+{% block content %}
+
+
+
+{% endblock %}
+
+
+
+{% block footer %}
+
+{% endblock %}
+
+{% block other_js %}
+
+{% endblock %}
+</body>
+</html>

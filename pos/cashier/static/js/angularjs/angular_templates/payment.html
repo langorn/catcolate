@@ -1,0 +1,65 @@
+<div style="display:inline-block" ng-show="record.pay_status !=2 && record.pay_status!=3">
+	<!-- <div ng-repeat="i in name"> -->
+		<!-- {{info.items[1]}} -->
+				<a class="ui red ribbon label">Card No {{record.card_no}}</a>
+			    <div class="image" style="align:center">
+			      <!-- <img src="https://en.opensuse.org/images/0/0b/Icon-user.png" height="80" width="80"> -->
+			    </div>
+			    <div class="extra">
+			      <div>
+					  <input type="checkbox" ng-model="paytogether" ng-show="payalone" ng-change="billtogether(record.id)">
+				      <div class="orderItem form ui">
+				      	{{record.member}}
+					      <!-- Amount: <span style="font-size:20pt">29.90</span> -->
+					      <!-- <div class="ui star rating" data-rating="4"></div> -->
+					  </div>
+					  <div class="orderList">
+					  	<div ng-repeat="order in record.orders track by $index">
+					  		<div style="display:inline-block">
+					  			<select ng-model='myfood' ng-options='t.id as t.name for t in foods'
+	                  			ng-change='upte(myfood, $index)'></select>
+	                  		</div>
+	                  		<div style="display:inline-block">
+	                  			<button ng-click='confirm_del($index)'>X</button>
+	                  		</div>
+
+
+	<!-- size as size.counter for size in sizes -->
+
+	 <!--                  			<select >
+	                  				<option value="{{food.id}}" ng-model="food.id" ng-change="upt(food.id)" ng-repeat="food in foods">{{food.name}}</option>
+	                  			</select> -->
+					  	</div>
+					  </div>
+				  </div>
+				  <div class="ui vertical labeled icon buttons">
+				    <div class="ui button" ng-click="addproduct()">
+				      <i class="add icon"></i>
+				      Add Item
+				    </div>
+				    <div class="ui button" ng-click="showdetail(record)">
+				      <i class="add icon"></i>
+				      View
+				    </div>
+
+				    <div class="ui button" ng-click="changetable(record)">
+				      <i class="add icon"></i>
+				      Change Table
+				    </div>
+
+<!-- 				    <div class="ui button" ng-click="paynow()">
+				      <i class="add icon"></i>
+				      Checkout
+				    </div> -->
+				  </div>
+
+				    <div class="ui form">
+				    	<input type="text" ng-model="record.card_no" placeholder="Card No..." ng-change="update_card_no()">
+				    </div>
+			    </div>
+
+
+
+
+	<!-- </div> -->
+</div>

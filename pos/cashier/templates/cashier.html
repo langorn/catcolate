@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+{{message}}
+{% endfor %}
+{% endif %}
+
+
+<div class="container" ng-app="catcolateApp">
+	<div class="ui grid" ng-controller="counterController" >
+		<div class="four wide column">
+			{% verbatim %}
+				TABLED SELECTED: {{tableNow}}
+			{% endverbatim %}
+			<div class="ui vertical pointing menu">
+				{% verbatim %}
+
+				<a ng-class="" class="item" ng-repeat="table in tables" ng-click="selectTable(table.id)">
+					{{table.name}}
+				</a>
+				{% endverbatim %}
+<!-- 				<a class="item">
+					Table 1 <div class="ui teal left pointing label">OPEN</div>
+				</a>
+ -->
+			</div>
+		</div>
+		<div class="seven wide column"  >
+
+			<div class="seven wide column">
+
+				<div style="display:inline-block">
+					<div class="ui icon input">
+						<i class="search icon"></i>
+						<input type="text" placeholder="Search..." ng-model="card_no" ng-change="findCard(card_no)">
+					</div>
+				</div>
+				<div style="display:inline-block;">
+					<button class="ui button teal" style="margin-bottom:10px;"  ng-click="addCustomer()" >
+						<i class="icon ui plus"></i>Add Customer
+					</button>
+					<button class="ui button teal" style="margin-bottom:10px;"  ng-click="clear_all()" >
+						<i class="icon ui plus"></i>Clear All
+					</button>
+					
+				</div>
+			</div>
+				{% verbatim %}
+				<!-- <div class="ui five stackable cards"> -->
+						<!-- <td><payment id="item.id" name="item.name" edit="item.edit"></payment></td> -->
+						<!-- <payment record="record" name="record.member" end_time="record.end_time"></payment> upt="updateOpt()"-->
+						<payment ng-repeat="record in records" record="record" myfood="myfood" foods="foods" viewdetail="viewdetail(record)" addproduct="addPayment(record)" paynow="paynow(record)" showdetail="showdetail(record)" update_card_no="update_card_no(record)" payalone="payTogetherState" paytogether="payTogether" billtogether="billTogether" changetable="changeTable(record)"></payment>
+				<!-- </div> -->
+				{% endverbatim %}
+
+		</div>
+			<div class="five wide column ui segment">
+				<div class="" style="">
+					<div style="border-style: outline;">
+						<button class="ui button blue" ng-click="hold_bill()" >Hold</button>
+						<button class="ui button blue" ng-click="pay_bill()" >Pay</button>
+						<!-- <button class="ui button blue" ng-click="selectTableUsers()">Pay Together</button> -->
+						<button class="ui button blue" ng-click="bill_by_table()">Pay By Table</button>
+						<button class="ui button red" ng-click="cancel_bill()">Cancel Bill</button>
+					</div>
+				</div>
+
+				<div class="" style="">
+					<div style="border-style: outline;"><h2>Details</h2></div>
+				</div>
+
+
+
+				{% verbatim %}
+
+					<div class="tableBillDetail" ng-show="payTogetherFlag">
+						<button class="ui button" ng-click="unselectedTableUsers()"> Close </button>
+						<table class="ui table">
+							<tr>
+								<td>Bill ID</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td>Member Name</td>
+								<td>
+								<div ng-repeat="bill in usersBill">
+									{{bill.time}}
+									hrs = RM {{bill.time_spent}}
+<!-- 									{{combineBill.spent}} * RM5 / HRS
+									= {{combineBill.time_amount}}  -->
+								</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Orders</td>
+								<td>{{chosenBill.orders}}
+									<!-- <div ng-repeat="i in bill.orderName"> -->
+									<div ng-repeat="ub in usersBill">
+										<div ng-repeat="i in ub.orderName">
+											{{i.name}}  - {{i.unit_price | currency}}
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Total Amount</td>
+								<td>
+<!-- 									Food: {{chosenBill.foodAmount}}<br>
+									Time : {{chosenBill.total_amount}} -->
+									 {{totalAmount | currency:"RM"}}
+
+								</td>
+							</tr>
+							<tr>
+								<td>Payment Status</td>
+								<td>{{chosenBill.pay_status}}</td>
+							</tr>
+
+						</table>
+						<div><input type="text" ng-model="userPay" ng-change="calculate(totalAmount)"> - {{totalAmount| currency}} = {{moneyChange | currency}}
+						</div>
+						<div>
+							<button class="ui button" ng-click="pay_table()">PAY ALL</button>
+						</div>
+					</div>
+				{% endverbatim %}
+
+
+
+				<div class="billDetail" ng-hide="payTogetherFlag">
+					{% verbatim %}
+					<table class="ui table">
+						<tr>
+							<td>Bill ID</td>
+							<td>{{chosenBill.id}}</td>
+						</tr>
+						<tr>
+							<td>Member Name</td>
+							<td>{{chosenBill.member}}</td>
+						</tr>
+						<tr>
+							<td>Start From</td>
+							<td>{{chosenBill.start_from  | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+						</tr>
+						<tr>
+							<td>End At</td>
+							<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+						</tr>
+						<tr>
+							<td>Orders</td>
+							<td>{{chosenBill.orders}}
+								<div ng-repeat="i in chosenBill.orderName">
+									{{i.name}}  - {{i.unit_price | currency}}
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Current Hours</td>
+							<td>{{chosenBill.spent | currency:"RM"}}</td>
+						</tr>
+						<tr>
+							<td>Total Amount</td>
+							<td>
+								Food: {{chosenBill.foodAmount  | currency:"RM"}}<br>
+								Time : {{chosenBill.total_amount  | currency:"RM"}}</td>
+						</tr>
+						<tr>
+							<td>Payment Status</td>
+							<td>{{chosenBill.pay_status}}</td>
+						</tr>
+
+					</table>
+						{% endverbatim %}
+				</div>
+			</div>
+	</div>
+
+
+
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script> -->
+
+	<script type="text/javascript" src="{% static "js/angularjs/controller/counter.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/angularjs/services/payment.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/angularjs/directive/payment.js" %}"></script>
+
+
+	<script>
+	$(function(){
+		$('#addItem').click(function(){
+			$('.orderItem').append('<select><option> -- Please Select -- </option><option> Orange Juice  </option><option> Apple Pie </option></select>');
+		});
+	})
+
+	</script>
+
+	{% endblock %}
