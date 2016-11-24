@@ -25,14 +25,13 @@ urlpatterns = [
     url(r'^bill/add/$', views.add_payment_record, name='add_bill'),
     url(r'^bill/update/(?P<payment_id>\d+)/$', views.edit_bill, name='edit_bill'),
     url(r'^bill/card/update/(?P<payment_id>\d+)/$', views.card_update, name='edit_bill'),
-    url(r'^bill/hold/(?P<payment_id>\d+)/$', views.hold_bill, name='hold_bill'),
-    url(r'^bill/pay/(?P<payment_id>\d+)/$', views.pay_bill, name='pay_bill'),
+    url(r'^bill/hold/$', views.hold_bill, name='hold_bill'),
+    url(r'^bill/pay/$', views.pay_bill, name='pay_bill'),
     url(r'^bill/pay_table/$', views.pay_table, name='pay_table'),
 
     url(r'^bill/cancel/(?P<payment_id>\d+)/$', views.cancel_bill, name='cancel_bill'),
     url(r'^bill/card_no/(?P<card_no>\d+)/$', views.get_card_no, name='get_card_no'),
     url(r'^bill/move/(?P<payment_id>\d+)/$',views.move_table, name='move_table'),
-
 
     url(r'^bill/together/$', views.bill_together, name='bill_together'),
 

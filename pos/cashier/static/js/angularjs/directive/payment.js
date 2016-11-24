@@ -20,7 +20,7 @@ catcolateApp.directive('payment', function($http){
 			changetable:"&",
 		},
 		link:function(scope,element,attr,Payment){
-			
+
 			scope.upte = function(no,index){
 				scope.record.orders[index] = no;
 				var csrfmiddlewaretoken = '{{csrf_token}}';
@@ -31,7 +31,6 @@ catcolateApp.directive('payment', function($http){
 						   'remark': scope.record.remark,
 						   'orders':scope.record.orders,
 						   'pay_status':scope.record.pay_status,
-
 				}})
 				scope.showdetail(scope.record);	
 			}

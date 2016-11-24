@@ -16,8 +16,8 @@
 					  <div class="orderList">
 					  	<div ng-repeat="order in record.orders track by $index">
 					  		<div style="display:inline-block">
-					  			<select ng-model='myfood' ng-options='t.id as t.name for t in foods'
-	                  			ng-change='upte(myfood, $index)'></select>
+					  			<select ng-model='order' ng-options='t.id as t.name for t in foods'
+	                  			ng-change='upte(order, $index)'></select>
 	                  		</div>
 	                  		<div style="display:inline-block">
 	                  			<button ng-click='confirm_del($index)'>X</button>

@@ -26,13 +26,21 @@ catcolateApp
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 			return $http({method: "GET", url: "/counter/bill/view/"+id+"/"});
 		},
-		hold: function(id){
+		hold: function(bills){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
-			return $http({method: "POST", url: "/counter/bill/hold/"+id+"/", data: {'csrfmiddlewaretoken':csrfmiddlewaretoken}})
+			return $http({method: "POST", url: "/counter/bill/hold/", 
+				data: {
+					'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					'bills':bills
+				}})
 		},
-		pay: function(id){
+		pay: function(bills){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
-			return $http({method: "POST", url: "/counter/bill/pay/"+id+"/", data: {'csrfmiddlewaretoken':csrfmiddlewaretoken}})
+			return $http({method: "POST", url: "/counter/bill/pay/", 
+				data: {
+					'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					'bills':bills
+				}})
 		},
 		pay_table: function(id){
 			var csrfmiddlewaretoken = '{{csrf_token}}';

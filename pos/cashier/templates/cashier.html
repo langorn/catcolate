@@ -60,9 +60,8 @@
 			<div class="five wide column ui segment">
 				<div class="" style="">
 					<div style="border-style: outline;">
-						<button class="ui button blue" ng-click="hold_bill()" >Hold</button>
-						<button class="ui button blue" ng-click="pay_bill()" >Pay</button>
-						<!-- <button class="ui button blue" ng-click="selectTableUsers()">Pay Together</button> -->
+<!-- 						<button class="ui button blue" ng-click="hold_bill()" >Hold</button>
+						<button class="ui button blue" ng-click="pay_bill()" >Pay</button> -->
 						<button class="ui button blue" ng-click="bill_by_table()">Pay By Table</button>
 						<button class="ui button red" ng-click="cancel_bill()">Cancel Bill</button>
 					</div>
@@ -89,20 +88,25 @@
 								<div ng-repeat="bill in usersBill">
 									{{bill.time}}
 									hrs = RM {{bill.time_spent}}
-<!-- 									{{combineBill.spent}} * RM5 / HRS
-									= {{combineBill.time_amount}}  -->
+
 								</div>
 								</td>
 							</tr>
 							<tr>
 								<td>Orders</td>
-								<td>{{chosenBill.orders}}
+								<td>{{usersBill.orderName}}
+								<div ng-repeat="bname in usersBill.orderName">
+									{{bname.name}}
+
+								</div>
+									
+
 									<!-- <div ng-repeat="i in bill.orderName"> -->
-									<div ng-repeat="ub in usersBill">
+<!-- 									<div ng-repeat="ub in usersBill">
 										<div ng-repeat="i in ub.orderName">
 											{{i.name}}  - {{i.unit_price | currency}}
 										</div>
-									</div>
+									</div> -->
 								</td>
 							</tr>
 							<tr>

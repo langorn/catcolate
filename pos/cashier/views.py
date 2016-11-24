@@ -20,7 +20,7 @@ from cashier.models import PaymentRecord, Product, OrderItem, OrderRecord
 import datetime
 import time
 # Create your views here.
-PER_HRS = 5
+PER_HRS = 6
 
 def dashboard(request):
 	return render(request, 'cashier.html')
@@ -39,7 +39,7 @@ def add_payment_record(request):
 			newbook.name = "non_member"
 			newbook.start_from = datetime.datetime.now()
 			newbook.end_time = None
-			newbook.pay_status = "0"
+			newbook.pay_status = 0
 			newbook.card_no = 0
 			newbook.table_no = payment_set['table_no']
 			# newbook.active = True
@@ -71,41 +71,56 @@ def card_update(request, payment_id):
 
 	return HttpResponse()
 
-def hold_bill(request,payment_id):
-	payment = PaymentRecord.objects.get(pk=payment_id)
-	payment.pay_status = 1
-	payment.end_time = datetime.datetime.now()
-	payment.save()
+def hold_bill(request):
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	bills = payment_set['bills']
+
+	payments = []
+
+	for bill in bills:
+		payment = PaymentRecord.objects.get(pk=bill)
+		payment.pay_status = 1
+		payment.end_time = datetime.datetime.now()
+		payment.save()
+		payments.append(payment)
 
 	return HttpResponse()
 
-def pay_bill(request,payment_id):
-	payment = PaymentRecord.objects.get(pk=payment_id)
-	payment.pay_status = 2
-	payment.end_time = datetime.datetime.now()
-	payment.save()
+def pay_bill(request):
 
-	total_amount = 0
-	orders = payment.orders.split(',')
-	if len(orders) > 1:
-		for order in orders:
-			product = Product.objects.get(pk=order)
-			total_amount += product.unit_price
-			orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
-			orderItem.save()
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	bills = payment_set['bills']
 
-	form = OrderRecord(
-		pay_status = payment.pay_status,
-		member = payment.member,
-		start_from = payment.start_from,
-		end_time = payment.end_time,
-		remark = payment.remark,
-		orders = payment.orders,
-		card_no = payment.card_no,
-		table_no = payment.table_no,
-		per_hrs = PER_HRS,
-		total_amount = total_amount)
-	form.save()
+
+	for bill in bills:
+		payment = PaymentRecord.objects.get(pk=bill)
+		payment.pay_status = 2
+		payment.end_time = datetime.datetime.now()
+		payment.save()
+
+		total_amount = 0
+		orders = payment.orders.split(',')
+		if len(orders) > 1:
+			for order in orders:
+				product = Product.objects.get(pk=order)
+				total_amount += product.unit_price
+				orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
+				orderItem.save()
+
+		form = OrderRecord(
+			pay_status = payment.pay_status,
+			member = payment.member,
+			start_from = payment.start_from,
+			end_time = payment.end_time,
+			remark = payment.remark,
+			orders = payment.orders,
+			card_no = payment.card_no,
+			table_no = payment.table_no,
+			per_hrs = PER_HRS,
+			total_amount = total_amount)
+		form.save()
 
 	return HttpResponse()
 
@@ -113,7 +128,7 @@ def pay_table(request):
 
 	start_delta = datetime.datetime.now() - datetime.timedelta(0.5)
 	end_delta = datetime.datetime.now() + datetime.timedelta(0.5)
-	records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(active=True)
+	# records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(active=True)
 	
 	data = request.body.decode('utf-8')
 	payment_set = json.loads(data)
@@ -123,7 +138,6 @@ def pay_table(request):
 
 	total_amount = 0
 	for payment in payments:
-		print payment
 		payment.pay_status = 2
 		payment.save()
 
@@ -182,6 +196,11 @@ def reconstruct(items):
 		except:
 			item.end_time = 0
 
+		item.orders_all = [];
+		for orde in item.orders:
+			print orde
+
+
 		record = {
 			'id': item.pk,
 			'member':name,		
@@ -218,6 +237,7 @@ def bill_together(request):
 
 	for user_list in user_lists:
 		record = PaymentRecord.objects.filter(pk = user_list)
+
 		result = reconstruct(record)
 		records.append(result[0])
 
@@ -235,9 +255,9 @@ def get_table(request, table_id):
 
 
 	if table_id == "0" or table_id == "99":
-		records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(active=True)
+		records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(active=True).filter(Q(pay_status="0") | Q(pay_status="1"))
 	else:
-		records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no = table_id)
+		records = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no = table_id).filter(Q(pay_status="0") | Q(pay_status="1"))
 	result = reconstruct(records)
 	response = JsonResponse({'records':result})
 

@@ -3,7 +3,7 @@
 // AngularJS
 /////////////////
 
-PER_HOURS = 5
+PER_HOURS = 6
 
 
 var catcolateApp = angular.module('catcolateApp', []);
@@ -25,7 +25,7 @@ catcolateApp.controller('counterController', function($scope, $http, Payment){
 	  	// 	console.log(data);
 	  	// })
 		console.log('hiha');
-		console.log(data);
+		// console.log(data);
 		if(typeof data.orders === 'undefined'){
 			data.orders = [];
 			data.orders.push('0');
@@ -33,6 +33,11 @@ catcolateApp.controller('counterController', function($scope, $http, Payment){
 			data.orders = [];
 			data.orders.push('0');
 		}else{
+			var isString = typeof data.orders
+			if(isString=="string"){
+				var orderArray = data.orders.split(",")
+				data.orders = orderArray;
+			}
 			data.orders.push('0');
 		}
 
@@ -163,7 +168,6 @@ $scope.changeTable = function(record){
 	.success(function(){
 		$scope.selectTable($scope.tableNow);
 	})
-
 }
 
 $scope.paynow = function(){
@@ -171,7 +175,7 @@ $scope.paynow = function(){
 }
 
 $scope.hold_bill = function(){
-	Payment.hold($scope.chosenBill.id)
+	Payment.hold($scope.payTogether)
 	.success(function(){
 		$scope.showdetail($scope.chosenBill);
 	})
@@ -199,7 +203,6 @@ $scope.billTogether = function(member_id){
 
 		
 		$scope.payTogetherFlag = true;
-
 		$scope.together_bills = [data][0].records;
 
 		//need to refactor this
@@ -207,15 +210,18 @@ $scope.billTogether = function(member_id){
 		console.log($scope.together_bills);
 		for(var record in $scope.together_bills){
 
-			console.log($scope.together_bills[record].end_time+' - '+$scope.together_bills[record].start_from);
+			// console.log($scope.together_bills[record].end_time);
+			// console.log($scope.together_bills[record].end_time+' - '+$scope.together_bills[record].start_from);
 			var timestamp = $scope.time_convert( $scope.together_bills[record].end_time,  $scope.together_bills[record].start_from);
 			var time_spent = $scope.time_cost(timestamp);
+			var foodName = findFoodName($scope.records[record], $scope.foods);
 
-
+			console.log(foodName);
 			var bill = {
 				'id': $scope.together_bills[record].id,
 				'time':timestamp.hrs+':'+timestamp.min,
-				'time_spent':time_spent.toFixed(2)
+				'time_spent':time_spent.toFixed(2),
+				'orderName':foodName
 			}
 			$scope.totalAmount += time_spent;
 			$scope.usersBill.push(bill);
@@ -239,7 +245,7 @@ $scope.bill_by_table = function(){
 
 		var bill = {
 			'id': $scope.records[record].id,
-			'time':timestamp.hrs+':'+timestamp.min,
+			'time':timestamp.hrs.toFixed(2), //+':'+timestamp.min,
 			'time_spent':time_spent.toFixed(2),
 			'orderName':foodName.orderName
 		}
@@ -267,14 +273,14 @@ function findFoodName(record, foods){
   		}
   	}
   	record.orderName = orderList;
-  	console.log(record.orderName);
+  	// console.log(record.orderName);
   	return record
 }
 
 
 
 $scope.pay_bill = function(){
-	Payment.pay($scope.chosenBill.id)
+	Payment.pay($scope.payTogether)
 	.success(function(){
 		// $scope.showdetail($scope.chosenBill);
 		$scope.selectTable($scope.tableNow);
@@ -300,20 +306,42 @@ $scope.cancel_bill = function(){
 	})
 }
 
-$scope.time_convert = function(start, end){
-
-	var total_time_stamp = new Date ((end - start) * 1000);
-	var spentTime = {
-		'hrs':total_time_stamp.getHours(),
-		'min':total_time_stamp.getMinutes()
+$scope.time_convert = function(end, start){
+	if(end == 0){
+		end = new Date();
 	}
+	var total_time_stamp = end-start// new Date ((end - start));
+	// console.log(total_time_stamp);
+	total_time_stamp = ((total_time_stamp) / 3600)/1000;
+	// alert(total_time_stamp)
+	// var spentTime = {
+	// 	'hrs':total_time_stamp.getUTCHours(),
+	// 	'min':total_time_stamp.getUTCMinutes()
+	// }
+	console.log(total_time_stamp);
+	var spentTime = {	
+		'hrs':total_time_stamp,
+		'min':total_time_stamp
+
+	}
+
 	return spentTime
 }
 
+function timeConverter(UNIX_timestamp){
+ var a = new Date(UNIX_timestamp*1000);
+     var hour = a.getUTCHours();
+     var min = a.getUTCMinutes();
+     var sec = a.getUTCSeconds();
+     var time = hour+':'+min+':'+sec ;
+     return time;
+ }
+
+
 $scope.time_cost = function(spentTime){
 	var cost = spentTime.hrs * PER_HOURS;
-	cost += ((spentTime.min/60) * PER_HOURS);
-
+	// cost += ((spentTime.min/60) * PER_HOURS);
+	console.log(cost+'='+spentTime.hrs+'*'+PER_HOURS);
 	return cost;
 }
 
@@ -322,24 +350,42 @@ $scope.reload = function(){
 }
 
 $scope.showdetail = function(record){
-	console.log(record);
 
 	$scope.payTogetherFlag = false;
 
 	$scope.chosenBill = record;
-	var total_time = Math.floor(Date.now() / 1000) - record.start_from
+	// var total_time = Math.floor(Date.now() / 1000) - record.start_from
+	var total_time = (new Date().getTime()) - record.start_from
 
-	var total_time_stamp = new Date(total_time * 1000);
-	var hrs = total_time_stamp.getHours();
-	var min = total_time_stamp.getMinutes();
+	// var total_time_stamp = end-start// new Date ((end - start));
+	// console.log(total_time_stamp);
+	total_time_stamp = ((total_time) / 3600)/1000;
+	// alert(total_time_stamp)
+	// var spentTime = {
+	// 	'hrs':total_time_stamp.getUTCHours(),
+	// 	'min':total_time_stamp.getUTCMinutes()
+	// }
+	// var spentTime = {	
+	// 	'hrs':total_time_stamp,
+	// 	'min':total_time_stamp
+
+	// }
+
+
+	// var total_time_stamp = new Date(total_time * 1000);
+	var hrs = total_time_stamp;
+	var min = total_time_stamp;
 
 	$scope.chosenBill.spent = hrs+':'+min;
 	  	// calculate the total amount
 	  	var totalFood = 0;
-	  	$scope.chosenBill.total_amount = (hrs*PER_HOURS)+ (min/60*PER_HOURS);
+	  	$scope.chosenBill.total_amount = (hrs*PER_HOURS) //+ (min/60*PER_HOURS);
 	  	for(var i in $scope.chosenBill.orders){
-	  		if($scope.foods[i]){
-	  			totalFood += $scope.foods[i].unit_price;
+	  		for(var f in $scope.foods){
+	  			// console.log($scope.chosenBill.orders[k]);
+		  		if($scope.foods[f].id == $scope.chosenBill.orders[i] ){
+		  			totalFood += $scope.foods[f].unit_price;
+		  		}
 	  		}
 	  	}
 	  	$scope.chosenBill.foodAmount = totalFood;
@@ -361,7 +407,6 @@ $scope.showdetail = function(record){
 		  		}
 	  		}
 	  	}
-	  	console.log(orderList)
 	  	$scope.chosenBill.orderName = orderList
 	  	$scope.chosenBill.pay_status = record.pay_status;
 	  }
@@ -371,6 +416,7 @@ $scope.showdetail = function(record){
 	  Payment.all()
 	  .success(function(data){
 	  	$scope.records = [data][0].records;
+	  	console.log(typeof [data][0].records.orders);
 	  });
 		// $scope.records = Payment.all();
 		// console.log($scope.records);
