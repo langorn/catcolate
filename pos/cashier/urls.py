@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^$',views.dashboard, name='index'),
     url(r'^bill/add/$', views.add_payment_record, name='add_bill'),
     url(r'^bill/update/(?P<payment_id>\d+)/$', views.edit_bill, name='edit_bill'),
-    url(r'^bill/card/update/(?P<payment_id>\d+)/$', views.card_update, name='edit_bill'),
+    url(r'^bill/card/update/(?P<payment_id>\d+)/$', views.card_update, name='card_update'),
     url(r'^bill/hold/$', views.hold_bill, name='hold_bill'),
     url(r'^bill/pay/$', views.pay_bill, name='pay_bill'),
     url(r'^bill/pay_table/$', views.pay_table, name='pay_table'),
@@ -38,6 +38,7 @@ urlpatterns = [
 
 
     url(r'^payments/$', views.payments, name='payments'),
+    url(r'^foods/$', views.foods, name='foods'),    
     url(r'^table/(?P<table_id>\d+)/$', views.get_table, name='get_table'),
 
 

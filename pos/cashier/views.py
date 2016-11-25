@@ -16,7 +16,7 @@ from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from cashier.forms import PaymentRecordForm, OrderItemForm, OrderRecordForm
-from cashier.models import PaymentRecord, Product, OrderItem, OrderRecord
+from cashier.models import PaymentRecord, Product, OrderItem, OrderRecord, Product
 import datetime
 import time
 # Create your views here.
@@ -139,15 +139,21 @@ def pay_table(request):
 	total_amount = 0
 	for payment in payments:
 		payment.pay_status = 2
+		payment.end_time = datetime.datetime.now()
 		payment.save()
 
 		orders = payment.orders.split(',')
 		if len(orders) > 1:
 			for order in orders:
-				product = Product.objects.get(pk=order)
-				total_amount += product.unit_price
-				orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
-				orderItem.save()
+				try:
+					product = Product.objects.get(pk=order)
+					total_amount += product.unit_price
+					orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
+					orderItem.save()
+				except:
+					pass
+
+
 
 		form = OrderRecord(
 			pay_status = payment.pay_status,
@@ -216,6 +222,20 @@ def reconstruct(items):
 		# time.mktime(mydate.timetuple())
 
 		items_collections.append(record)
+	return items_collections
+
+
+def food_construct(items):
+	items_collections = []
+	for item in items:
+		record = {
+			'id': item.pk,
+			'name':item.name,
+			'unit_price':item.unit_price
+
+		}
+		items_collections.append(record)
+
 	return items_collections
 
 
@@ -289,6 +309,12 @@ def get_card_no(request, card_no):
 	response = JsonResponse({'records':result})
 	return response
 
+def foods(request):
+
+	records = Product.objects.filter(active=True)
+	result = food_construct(records)
+	response = JsonResponse({'records':result})
+	return response
 
 # def update_book(request,book_id):
 # 	book = Book.objects.get(pk=book_id)

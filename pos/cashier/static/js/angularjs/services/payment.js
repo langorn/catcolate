@@ -4,6 +4,9 @@ catcolateApp
 		all: function(){
 			return $http({method: "GET", url: "/counter/payments/"});
 		},
+		foods: function(){
+			return $http({method: "GET", url: "/counter/foods/"});
+		},
 		add: function(id){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 			return $http({method: "POST", url: "/counter/bill/add/", 

@@ -23,6 +23,12 @@ catcolateApp.directive('payment', function($http){
 
 			scope.upte = function(no,index){
 				scope.record.orders[index] = no;
+
+				console.log(scope.record.orders);
+				console.log(scope.record.orders[index])
+
+				console.log(no +'/'+index);
+				// console.log(scope.record.orders[index]);
 				var csrfmiddlewaretoken = '{{csrf_token}}';
 					$http({method: "POST", url: "/counter/bill/update/"+scope.record.id+'/', 
 					data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
