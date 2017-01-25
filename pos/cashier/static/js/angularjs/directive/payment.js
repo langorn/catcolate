@@ -10,7 +10,7 @@ catcolateApp.directive('payment', function($http){
 			payalone:"=",
 			paytogether:"=",
 			billtogether:"=",
-			myfood:'=',
+			// myfood:'=',
 			foods:'=',
 			record:"=",
 			addproduct:"&",
@@ -67,6 +67,14 @@ catcolateApp.directive('payment', function($http){
 				}})
 			}
 
+
+			scope.update_remark = function(){
+				var csrfmiddlewaretoken = '{{csrf_token}}';
+					$http({method: "POST", url: "/counter/bill/remark/update/"+scope.record.id+'/', 
+					data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
+						   'remark':scope.record.remark
+				}})
+			}
 
 
 

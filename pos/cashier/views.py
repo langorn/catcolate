@@ -71,21 +71,69 @@ def card_update(request, payment_id):
 
 	return HttpResponse()
 
+def remark_update(request, payment_id):
+	payment = PaymentRecord.objects.get(pk=payment_id)
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	payment.remark = payment_set['remark']
+	payment.save()
+
+	return HttpResponse()
+
+
 def hold_bill(request):
 	data = request.body.decode('utf-8')
 	payment_set = json.loads(data)
 	bills = payment_set['bills']
 
+	# print bills
 	payments = []
 
 	for bill in bills:
 		payment = PaymentRecord.objects.get(pk=bill)
-		payment.pay_status = 1
-		payment.end_time = datetime.datetime.now()
-		payment.save()
+		# print payment.pay_status
+		if payment.pay_status !=2:
+			# print "not 2"
+			payment.pay_status = 1
+			payment.end_time = datetime.datetime.now()
+			payment.save()
 		payments.append(payment)
 
 	return HttpResponse()
+
+def hold_table(request,table_id):
+
+	start_delta = datetime.datetime.now() - datetime.timedelta(0.5)
+	end_delta = datetime.datetime.now() + datetime.timedelta(0.5)
+
+	payments = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no=table_id).filter(active=True).filter(Q(pay_status="0") | Q(pay_status="1"))
+
+	for payment in payments:
+		print "---->"+payment.pay_status
+		if payment.pay_status == 2:
+			print payment.pay_status + " = cannot save"
+
+		else:
+			
+			print payment.pay_status + " = save"
+			payment.pay_status = "1"
+			payment.end_time = datetime.datetime.now()
+			payment.save()
+
+
+	return HttpResponse()
+
+
+def single_bill(request,payment_id):
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	bill_no = payment_set['bill_id']
+	payment = PaymentRecord.objects.get(pk=bill_no)
+	payment.pay_status = 2
+	payment.end_time = datetime.datetime.now()
+	payment.save()
+
+	return HttpResponse(payment_id)
 
 def pay_bill(request):
 
@@ -99,6 +147,7 @@ def pay_bill(request):
 		payment.pay_status = 2
 		payment.end_time = datetime.datetime.now()
 		payment.save()
+
 
 		total_amount = 0
 		orders = payment.orders.split(',')
@@ -229,7 +278,7 @@ def food_construct(items):
 	items_collections = []
 	for item in items:
 		record = {
-			'id': item.pk,
+			'id': str(item.pk),
 			'name':item.name,
 			'unit_price':item.unit_price
 

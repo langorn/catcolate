@@ -16,7 +16,9 @@
 					  <div class="orderList">
 					  	<div ng-repeat="order in record.orders track by $index">
 					  		<div style="display:inline-block">
-					  			<select ng-model='order' ng-options='t.id as t.name for t in foods'
+<!-- 					  			<select ng-model='order' ng-options='t.id as t.name for t in foods'
+	                  			ng-change='upte(order, $index)'></select> -->
+	                  		<select ng-model='order' ng-options='t.id as t.name for t in foods'
 	                  			ng-change='upte(order, $index)'></select>
 	                  		</div>
 	                  		<div style="display:inline-block">
@@ -53,9 +55,14 @@
 				    </div> -->
 				  </div>
 
-				    <div class="ui form">
+<!-- 				    <div class="ui form">
 				    	<input type="text" ng-model="record.card_no" placeholder="Card No..." ng-change="update_card_no()">
+				    </div> -->
+				    <div class="ui form">
+				    	<input type="text" ng-model="record.remark" placeholder="Remark..." ng-change="update_remark()">
 				    </div>
+
+
 			    </div>
 
 

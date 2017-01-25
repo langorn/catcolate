@@ -32,13 +32,13 @@
 
 			<div class="seven wide column">
 
-				<div style="display:inline-block">
+				<div class="inlineBlock" >
 					<div class="ui icon input">
 						<i class="search icon"></i>
 						<input type="text" placeholder="Search..." ng-model="card_no" ng-change="findCard(card_no)">
 					</div>
 				</div>
-				<div style="display:inline-block;">
+				<div class="inlineBlock">
 					<button class="ui button teal" style="margin-bottom:10px;"  ng-click="addCustomer()" >
 						<i class="icon ui plus"></i>Add Customer
 					</button>
@@ -71,12 +71,18 @@
 					<div style="border-style: outline;"><h2>Details</h2></div>
 				</div>
 
-
+				<div>
+					<div class="actionMenu"><button class="ui button orange" ng-click="hold_bill()"> Hold Multiple Bill</button></div>
+				</div>
 
 				{% verbatim %}
-
 					<div class="tableBillDetail" ng-show="payTogetherFlag">
-						<button class="ui button" ng-click="unselectedTableUsers()"> Close </button>
+						<div>
+							
+							<div class="actionMenu"><button class="ui button" ng-click="unselectedTableUsers()"> Close </button></div>
+							<div class="actionMenu"><button class="ui button blue" ng-click="hold_bills()"> Hold Table Bill</button></div>
+						</div>
+						<div>
 						<table class="ui table">
 							<tr>
 								<td>Bill ID</td>
@@ -88,26 +94,23 @@
 								<div ng-repeat="bill in usersBill">
 									{{bill.time}}
 									hrs = RM {{bill.time_spent}}
-
 								</div>
 								</td>
 							</tr>
 							<tr>
 								<td>Orders</td>
 								<td>{{usersBill.orderName}}
-								<div ng-repeat="userbill in usersBill">
-									<div ng-repeat="oName in userbill.orderName">
-										
+								<div ng-repeat="userbill in usersBill" class="ui segment">
+									<div class="ui button teal" ng-click="user_pay($index)">Pay</div>
+									<div ng-repeat="oName in userbill.orderName" style="text-align:right">
 										{{oName.name}} {{oName.unit_price | currency:'RM'}}
-
-
-
 									</div>
-
-
+									<div style="color:red;text-align:right"><b> + {{userbill.time_spent| currency:'RM'}}</b>
+									</div>
+									<hr>
+									<div style="text-align:right">{{userbill.subTotal | currency:'RM'}}</div>
+									<hr>
 								</div>
-
-
 									<!-- <div ng-repeat="i in bill.orderName"> -->
 <!-- 									<div ng-repeat="ub in usersBill">
 										<div ng-repeat="i in ub.orderName">
@@ -119,21 +122,21 @@
 							<tr>
 								<td>Total Amount</td>
 								<td>
-									Food: {{foodTotal}}<br>
+									<div class="ui segment" style="text-align:right">
+									Food: {{foodTotal | currency:"RM" }}<br>
 									<!-- Time : {{chosenBill.total_amount}}<br> -->
-									Time: {{totalAmount | currency:"RM"}} <br>
+									Time: {{totalAmount | currency:"RM"}} 
+									<hr>
 									Total = {{foodAndTime | currency:"RM"}} 
-
-
-
+									</div>
 								</td>
 							</tr>
 							<tr>
 								<td>Payment Status</td>
 								<td>{{chosenBill.pay_status}}</td>
 							</tr>
-
 						</table>
+						</div>
 						<div><input type="text" ng-model="userPay" ng-change="calculate(foodAndTime)"> - {{foodAndTime| currency}} = {{moneyChange | currency}}
 						</div>
 						<div>
@@ -146,6 +149,9 @@
 
 				<div class="billDetail" ng-hide="payTogetherFlag">
 					{% verbatim %}
+
+
+
 					<table class="ui table">
 						<tr>
 							<td>Bill ID</td>
@@ -161,7 +167,9 @@
 						</tr>
 						<tr>
 							<td>End At</td>
-							<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+							<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}} 
+								<div class="ui label">{{chosenBill.is_hold}}</label>
+							</td>
 						</tr>
 						<tr>
 							<td>Orders</td>
@@ -173,17 +181,20 @@
 						</tr>
 						<tr>
 							<td>Current Hours</td>
-							<td>{{chosenBill.spent | currency:"RM"}}</td>
+							<td>{{chosenBill.spent }} Hours</td>
 						</tr>
 						<tr>
 							<td>Total Amount</td>
 							<td>
+								
 								Food: {{chosenBill.foodAmount  | currency:"RM"}}<br>
-								Time : {{chosenBill.total_amount  | currency:"RM"}}</td>
+								Time : {{chosenBill.total_amount  | currency:"RM"}}<br>
+								<hr>
+								<b>Total: {{chosenBill.foodAndTime | currency:"RM"}}</b></td>
 						</tr>
 						<tr>
 							<td>Payment Status</td>
-							<td>{{chosenBill.pay_status}}</td>
+							<td>{{pay_state[chosenBill.pay_status]}}</td>
 						</tr>
 
 					</table>

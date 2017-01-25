@@ -31,13 +31,31 @@ catcolateApp
 		},
 		hold: function(bills){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
+
+			console.log(bills);
 			return $http({method: "POST", url: "/counter/bill/hold/", 
 				data: {
 					'csrfmiddlewaretoken':csrfmiddlewaretoken,
 					'bills':bills
 				}})
 		},
+		hold_table:function(table_id){
+			var csrfmiddlewaretoken = '{{csrf_token}}';
+			return $http({method: "POST", url: "/counter/bill/hold_table/"+table_id+"/", 
+				data: {
+					'csrfmiddlewaretoken':csrfmiddlewaretoken,
+				}})
+		},
+		single_pay:function(bill_id){
+			var csrfmiddlewaretoken = '{{csrf_token}}';
+			return $http({method: "POST", url: "/counter/bill/single_pay/"+bill_id+"/", 
+				data: {
+					'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					'bill_id':bill_id
+				}})
+		},
 		pay: function(bills){
+			// pay couple of bills
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 			return $http({method: "POST", url: "/counter/bill/pay/", 
 				data: {
