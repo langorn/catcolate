@@ -10,14 +10,13 @@ catcolateApp.directive('payment', function($http){
 			payalone:"=",
 			paytogether:"=",
 			billtogether:"=",
-			// myfood:'=',
 			foods:'=',
 			record:"=",
+			checkmembership:"=",
 			addproduct:"&",
-			// upt:"&",
 			paynow:"&",
 			showdetail:"&",
-			changetable:"&",
+			changetable:"&"
 		},
 		link:function(scope,element,attr,Payment){
 

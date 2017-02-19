@@ -10,27 +10,34 @@
 
 
 <div class="container" ng-app="catcolateApp">
-	<div class="ui grid" ng-controller="counterController" >
-		<div class="four wide column">
+	<div class="ui grid " ng-controller="counterController" >
+
+<style>
+.redFont{
+	margin-top:20px;
+}
+.blueFont{
+	margin-bottom:20px;
+}
+</style>
+		<div class="four wide column noprint">
+
 			{% verbatim %}
-				TABLED SELECTED: {{tableNow}}
+			TABLED SELECTED: {{tableNow}}
 			{% endverbatim %}
-			<div class="ui vertical pointing menu">
+			<div class="ui vertical pointing menu noprint">
 				{% verbatim %}
 
 				<a ng-class="" class="item" ng-repeat="table in tables" ng-click="selectTable(table.id)">
 					{{table.name}}
 				</a>
 				{% endverbatim %}
-<!-- 				<a class="item">
-					Table 1 <div class="ui teal left pointing label">OPEN</div>
-				</a>
- -->
+
 			</div>
 		</div>
-		<div class="seven wide column"  >
+		<div class="seven wide column noprint">
 
-			<div class="seven wide column">
+			<div class="seven wide column noprint">
 
 				<div class="inlineBlock" >
 					<div class="ui icon input">
@@ -45,180 +52,192 @@
 					<button class="ui button teal" style="margin-bottom:10px;"  ng-click="clear_all()" >
 						<i class="icon ui plus"></i>Clear All
 					</button>
-					
+
 				</div>
 			</div>
-				{% verbatim %} 
-				<!-- <div class="ui five stackable cards"> -->
-						<!-- <td><payment id="item.id" name="item.name" edit="item.edit"></payment></td> -->
-						<!-- <payment record="record" name="record.member" end_time="record.end_time"></payment> upt="updateOpt()"-->
-						<payment ng-repeat="record in records" record="record" myfood="myfood" foods="foods" viewdetail="viewdetail(record)" addproduct="addPayment(record)" paynow="paynow(record)" showdetail="showdetail(record)" update_card_no="update_card_no(record)" payalone="payTogetherState" paytogether="payTogether" billtogether="billTogether" changetable="changeTable(record)"></payment>
-				<!-- </div> -->
-				{% endverbatim %}
+			{% verbatim %} 
+			<!-- <div class="ui five stackable cards"> -->
+			<!-- <td><payment id="item.id" name="item.name" edit="item.edit"></payment></td> -->
+			<!-- <payment record="record" name="record.member" end_time="record.end_time"></payment> upt="updateOpt()"-->
+			<payment ng-repeat="record in records" record="record" myfood="myfood" foods="foods" viewdetail="viewdetail(record)" addproduct="addPayment(record)" paynow="paynow(record)" showdetail="showdetail(record)" update_card_no="update_card_no(record)" checkmembership="checkmembership" payalone="payTogetherState" paytogether="payTogether" billtogether="billTogether" changetable="changeTable(record)"></payment>
+			<!-- </div> -->
+			{% endverbatim %}
 
 		</div>
-			<div class="five wide column ui segment">
-				<div class="" style="">
-					<div style="border-style: outline;">
+		<div class="five wide column ui segment">
+			<div class="noprint" >
+				<div style="border-style: outline;">
 <!-- 						<button class="ui button blue" ng-click="hold_bill()" >Hold</button>
-						<button class="ui button blue" ng-click="pay_bill()" >Pay</button> -->
-						<button class="ui button blue" ng-click="bill_by_table()">Pay By Table</button>
-						<button class="ui button red" ng-click="cancel_bill()">Cancel Bill</button>
-					</div>
-				</div>
+	<button class="ui button blue" ng-click="pay_bill()" >Pay</button> -->
+	<button class="ui button blue" ng-click="bill_by_table()">Pay By Table</button>
+	<button class="ui button red" ng-click="cancel_bill()">Cancel Bill</button>
+</div>
+</div>
 
-				<div class="" style="">
-					<div style="border-style: outline;"><h2>Details</h2></div>
-				</div>
+<div class="noprint" style="">
+	<div style="border-style: outline;"><h2>Details</h2></div>
+</div>
 
-				<div>
-					<div class="actionMenu"><button class="ui button orange" ng-click="hold_bill()"> Hold Multiple Bill</button></div>
-				</div>
+<div class="noprint">
+	<div class="actionMenu"><button class="ui button orange" ng-click="hold_bill()"> Hold Multiple Bill</button></div>
+</div>
 
-				{% verbatim %}
-					<div class="tableBillDetail" ng-show="payTogetherFlag">
-						<div>
-							
-							<div class="actionMenu"><button class="ui button" ng-click="unselectedTableUsers()"> Close </button></div>
-							<div class="actionMenu"><button class="ui button blue" ng-click="hold_bills()"> Hold Table Bill</button></div>
+{% verbatim %}
+<div class="tableBillDetail" ng-show="payTogetherFlag">
+	<!-- screen -->
+	<div class="noprint">
+		<div>
+
+			<div class="actionMenu"><button class="ui button" ng-click="unselectedTableUsers()"> Close </button></div>
+			<div class="actionMenu"><button class="ui button blue" ng-click="hold_bills()"> Hold Table Bill</button></div>
+		</div>
+		<div>
+			<table class="ui table">
+				<tr>
+					<td>Bill ID</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Member Name</td>
+					<td>
+						<div ng-repeat="bill in usersBill">
+							{{bill.time}}
+							hrs = RM {{bill.time_spent}}
 						</div>
-						<div>
-						<table class="ui table">
-							<tr>
-								<td>Bill ID</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td>Member Name</td>
-								<td>
-								<div ng-repeat="bill in usersBill">
-									{{bill.time}}
-									hrs = RM {{bill.time_spent}}
-								</div>
-								</td>
-							</tr>
-							<tr>
-								<td>Orders</td>
-								<td>{{usersBill.orderName}}
-								<div ng-repeat="userbill in usersBill" class="ui segment">
-									<div class="ui button teal" ng-click="user_pay($index)">Pay</div>
-									<div ng-repeat="oName in userbill.orderName" style="text-align:right">
-										{{oName.name}} {{oName.unit_price | currency:'RM'}}
-									</div>
-									<div style="color:red;text-align:right"><b> + {{userbill.time_spent| currency:'RM'}}</b>
-									</div>
-									<hr>
-									<div style="text-align:right">{{userbill.subTotal | currency:'RM'}}</div>
-									<hr>
-								</div>
-									<!-- <div ng-repeat="i in bill.orderName"> -->
-<!-- 									<div ng-repeat="ub in usersBill">
-										<div ng-repeat="i in ub.orderName">
-											{{i.name}}  - {{i.unit_price | currency}}
-										</div>
-									</div> -->
-								</td>
-							</tr>
-							<tr>
-								<td>Total Amount</td>
-								<td>
-									<div class="ui segment" style="text-align:right">
-									Food: {{foodTotal | currency:"RM" }}<br>
-									<!-- Time : {{chosenBill.total_amount}}<br> -->
-									Time: {{totalAmount | currency:"RM"}} 
-									<hr>
-									Total = {{foodAndTime | currency:"RM"}} 
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td>Payment Status</td>
-								<td>{{chosenBill.pay_status}}</td>
-							</tr>
-						</table>
+
+						<div class="showReceipt" style="display:none">
+							<div ng-repeat="bill in usersBill">
+								{{bill.time}}
+								hrs = RM {{bill.time_spent}}
+							</div>
 						</div>
-						<div><input type="text" ng-model="userPay" ng-change="calculate(foodAndTime)"> - {{foodAndTime| currency}} = {{moneyChange | currency}}
+
+					</td>
+				</tr>
+				<tr>
+					<td>Orders</td>
+					<td>{{usersBill.orderName}}
+						<div ng-repeat="userbill in usersBill" class="ui segment">
+							<div class="ui button teal" ng-click="user_pay($index)">Pay</div>
+							<div ng-repeat="oName in userbill.orderName" style="text-align:right">
+								{{oName.name}} {{oName.unit_price | currency:'RM'}}
+							</div>
+							<div style="color:red;text-align:right"><b> + {{userbill.time_spent| currency:'RM'}}</b>
+							</div>
+							<hr>
+							<div style="text-align:right">{{userbill.subTotal | currency:'RM'}}</div>
+							<hr>
 						</div>
-						<div>
-							<button class="ui button" ng-click="pay_table()">PAY ALL</button>
+
+					</td>
+				</tr>
+				<tr>
+					<td>Total Amount</td>
+					<td>
+						<div class="ui segment" style="text-align:right">
+							Food: {{foodTotal | currency:"RM" }}<br>
+							<!-- Time : {{chosenBill.total_amount}}<br> -->
+							Time: {{totalAmount | currency:"RM"}} 
+							<hr>
+							Total = {{foodAndTime | currency:"RM"}} 
 						</div>
-					</div>
-				{% endverbatim %}
-
-
-
-				<div class="billDetail" ng-hide="payTogetherFlag">
-					{% verbatim %}
-
-
-
-					<table class="ui table">
-						<tr>
-							<td>Bill ID</td>
-							<td>{{chosenBill.id}}</td>
-						</tr>
-						<tr>
-							<td>Member Name</td>
-							<td>{{chosenBill.member}}</td>
-						</tr>
-						<tr>
-							<td>Start From</td>
-							<td>{{chosenBill.start_from  | date:"MM/dd/yyyy 'at' h:mma"}}</td>
-						</tr>
-						<tr>
-							<td>End At</td>
-							<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}} 
-								<div class="ui label">{{chosenBill.is_hold}}</label>
-							</td>
-						</tr>
-						<tr>
-							<td>Orders</td>
-							<td>{{chosenBill.orders}}
-								<div ng-repeat="i in chosenBill.orderName">
-									{{i.name}}  - {{i.unit_price | currency}}
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>Current Hours</td>
-							<td>{{chosenBill.spent }} Hours</td>
-						</tr>
-						<tr>
-							<td>Total Amount</td>
-							<td>
-								
-								Food: {{chosenBill.foodAmount  | currency:"RM"}}<br>
-								Time : {{chosenBill.total_amount  | currency:"RM"}}<br>
-								<hr>
-								<b>Total: {{chosenBill.foodAndTime | currency:"RM"}}</b></td>
-						</tr>
-						<tr>
-							<td>Payment Status</td>
-							<td>{{pay_state[chosenBill.pay_status]}}</td>
-						</tr>
-
-					</table>
-						{% endverbatim %}
-				</div>
-			</div>
+					</td>
+				</tr>
+				<tr>
+					<td>Payment Status</td>
+					<td>{{chosenBill.pay_status}}</td>
+				</tr>
+			</table>
+		</div>
+		<div><input type="text" ng-model="userPay" ng-change="calculate(foodAndTime)"> - {{foodAndTime| currency}} = {{moneyChange | currency}}
+		</div>
+		<div>
+			<button class="ui button" ng-click="pay_table()">PAY ALL</button>
+		</div>
 	</div>
+	<!-- print -->
+
+</div>
+{% endverbatim %}
 
 
 
-	<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script> -->
-
-	<script type="text/javascript" src="{% static "js/angularjs/controller/counter.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/angularjs/services/payment.js" %}"></script>
-	<script type="text/javascript" src="{% static "js/angularjs/directive/payment.js" %}"></script>
+<div class="billDetail noprint" ng-hide="payTogetherFlag">
+	{% verbatim %}
 
 
-	<script>
-	$(function(){
-		$('#addItem').click(function(){
-			$('.orderItem').append('<select><option> -- Please Select -- </option><option> Orange Juice  </option><option> Apple Pie </option></select>');
-		});
-	})
 
-	</script>
+	<table class="ui table">
+		<tr>
+			<td>Bill ID</td>
+			<td>{{chosenBill.id}}</td>
+		</tr>
+		<tr>
+			<td>Member Name</td>
+			<td>{{chosenBill.member}}</td>
+		</tr>
+		<tr>
+			<td>Start From</td>
+			<td>{{chosenBill.start_from  | date:"MM/dd/yyyy 'at' h:mma"}}</td>
+		</tr>
+		<tr>
+			<td>End At</td>
+			<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}} 
+				<div class="ui label">{{chosenBill.is_hold}}</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Orders</td>
+			<td>{{chosenBill.orders}}
+				<div ng-repeat="i in chosenBill.orderName">
+					{{i.name}}  - {{i.unit_price | currency}}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>Current Hours</td>
+			<td>{{chosenBill.spent }} Hours</td>
+		</tr>
+		<tr>
+			<td>Total Amount</td>
+			<td>
 
-	{% endblock %}
+				Food: {{chosenBill.foodAmount  | currency:"RM"}}<br>
+				Time : {{chosenBill.total_amount  | currency:"RM"}}<br>
+				<hr>
+				<b>Total: {{chosenBill.foodAndTime | currency:"RM"}}</b></td>
+			</tr>
+			<tr>
+				<td>Payment Status</td>
+				<td>{{pay_state[chosenBill.pay_status]}}</td>
+			</tr>
+
+		</table>
+		{% endverbatim %}
+
+	</div>
+</div>
+</div>
+</div>
+
+<div class="receipt">
+
+</div>
+
+<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script> -->
+
+<script type="text/javascript" src="{% static "js/angularjs/controller/counter.js" %}"></script>
+<script type="text/javascript" src="{% static "js/angularjs/services/payment.js" %}"></script>
+<script type="text/javascript" src="{% static "js/angularjs/directive/payment.js" %}"></script>
+
+
+<script>
+$(function(){
+	$('#addItem').click(function(){
+		$('.orderItem').append('<select><option> -- Please Select -- </option><option> Orange Juice  </option><option> Apple Pie </option></select>');
+	});
+})
+
+</script>
+
+{% endblock %}

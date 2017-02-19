@@ -4,7 +4,10 @@
 /////////////////
 
 PER_HOURS = 6
-
+var member = {
+	'price':5,
+	'promotion':2
+}
 
 var catcolateApp = angular.module('catcolateApp', []);
 
@@ -24,8 +27,6 @@ catcolateApp.controller('counterController', function($scope, $http, Payment){
 	  	// Payment.add().success(function(data){
 	  	// 	console.log(data);
 	  	// })
-		console.log('hiha');
-		// console.log(data);
 		if(typeof data.orders === 'undefined'){
 			data.orders = [];
 			data.orders.push('0');
@@ -71,6 +72,24 @@ $scope.tables = [
 ]
 
 
+
+// chosenBill state
+/*
+chosenBill = {
+	'id': -,
+	'spent':-,
+	'total_amount':'',
+	'foodAmount':'',
+	'foodAndTime':'',
+	'total_amount':'',
+	'orders':[],
+	'orderName':[],
+	'pay_status':'',
+	'end_time':'',
+	'start_from':'',
+	'is_hold':false,
+}
+*/
 
 $scope.pay_state = 
 [
@@ -138,17 +157,6 @@ $scope.findCard = function(card_no){
 		// $scope.records = [data][0].records;
 		$scope.records = convertArray([data][0].records);
 	})
-
-	// var result = null;
-	// for(var record in $scope.records){
-	// 	if($scope.records[record].card_no){
-	// 		if($scope.records[record].card_no==card_no){
-	// 			result = $scope.records[record]
-	// 		}	
-	// 	}
-	// }
-	// console.log(result);
-	// $scope.records[0] = result;
 }
 
 
@@ -224,7 +232,6 @@ $scope.hold_bills = function(){
 	.success(function(){
 		// $scope.showdetail($scope.chosenBill);
 		$scope.payTogether = [];
-
 		$scope.selectTable($scope.tableNow);
 	})
 }
@@ -250,7 +257,6 @@ $scope.billTogether = function(member_id){
 	Payment.together($scope.payTogether)
 	.success(function(data){
 
-		
 		$scope.payTogetherFlag = true;
 		$scope.together_bills = [data][0].records;
 
@@ -261,23 +267,17 @@ $scope.billTogether = function(member_id){
 		for(var record in $scope.together_bills){
 			var foodPrice = 0; //each player's food total;
 			var subTotal = 0; // subtotal of food & time;
-			// console.log($scope.together_bills[record].end_time);
-			// console.log($scope.together_bills[record].end_time+' - '+$scope.together_bills[record].start_from);
 			var timestamp = $scope.time_convert( $scope.together_bills[record].end_time,  $scope.together_bills[record].start_from);
-			var time_spent = $scope.time_cost(timestamp);
+			
+			// if member , then pay member price
+			var time_spent = $scope.time_cost(timestamp, record.member_price);
 			var foodName = findFoodName($scope.together_bills[record], $scope.foods);
-
 			console.log(foodName);
 
 			for(var f in foodName.orderName){
-				// console.log(foodName.orderName[f].unit_price);
-				// console.log(typeof foodName.orderName[f].unit_price);
 				if(foodName.orderName[f].unit_price!="undefined"){
-					// console.log(foodName.orderName[f]);
-					// console.log(parseFloat(foodName.orderName[f].unit_price));
 					$scope.foodTotal += parseFloat(foodName.orderName[f].unit_price);
 					foodPrice += parseFloat(foodName.orderName[f].unit_price);
-					// console.log($scope.foodTotal);
 				}
 			}
 
@@ -308,20 +308,24 @@ $scope.bill_by_table = function(){
 
 	$scope.usersBill = [];
 	for(var record in $scope.records){
+
+		var isMember = $scope.records[record].member_price;
 		var foodPrice = 0; //each player's food total;
 		var subTotal = 0; // subtotal of food & time;
 		var timestamp = $scope.time_convert( $scope.records[record].end_time,  $scope.records[record].start_from);
-		var time_spent = $scope.time_cost(timestamp);
+		// if member , then pay member price
+		var time_spent = $scope.time_cost(timestamp, isMember);
 		var foodName = findFoodName($scope.records[record], $scope.foods);
 
 		// console.log(foodName);
 
 
 		for(var f in foodName.orderName){
-			console.log(foodName.orderName[f]);
+			console.log(foodName.orderName[f])
+
 			$scope.foodTotal += parseFloat(foodName.orderName[f].unit_price);
 			foodPrice += parseFloat(foodName.orderName[f].unit_price);
-
+		
 		}
 
 		var bill = {
@@ -338,34 +342,37 @@ $scope.bill_by_table = function(){
 
 	}
 	$scope.foodAndTime = $scope.totalAmount + $scope.foodTotal;
+	var content = $('.showReceipt').html();
+	console.log(content);
+	$('.receipt').html(content);
+
 }
 
 //search the food return a object with price.
 function findFoodName(record, foods){
   	// find the Order Name
   	var orderList = [];
-  	console.log(record);
-
-  	// if(record.pay_status && record.pay_status=="2"||record.pay_status=="1"){
-  	// 	return []
-  	// }
   	for(var k in record.orders){
 
   		for(var f in foods){
-  			// console.log($scope.chosenBill.orders[k]);
 	  		if($scope.foods[f].id == record.orders[k] ){
 
+	  			if(record.member_price){
+	  				var price = $scope.foods[f].promotion_price
+	  			}else{
+	  				var price = $scope.foods[f].unit_price
+	  			}
 	  			orderList.push(
 	  				{
 	  					'id':$scope.foods[f].id,
 	  					'name':$scope.foods[f].name,
-	  					'unit_price':$scope.foods[f].unit_price
+	  					'unit_price':price,
+
 	  				})
 	  		}
   		}
   	}
   	record.orderName = orderList;
-  	// console.log(record.orderName);
   	return record
 }
 
@@ -374,7 +381,6 @@ function findFoodName(record, foods){
 $scope.pay_bill = function(){
 	Payment.pay($scope.payTogether)
 	.success(function(){
-		// $scope.showdetail($scope.chosenBill);
 		$scope.payTogether = [];
 		$scope.selectTable($scope.tableNow);
 	})
@@ -397,7 +403,6 @@ $scope.pay_table = function(){
 	var table_no = $scope.tableNow
 	Payment.pay_table(table_no)
 	.success(function(){
-		// $scope.showdetail($scope.chosenBill);
 		$scope.payTogether = [];
 		$scope.selectTable($scope.tableNow);
 	})
@@ -408,7 +413,6 @@ $scope.pay_table = function(){
 $scope.cancel_bill = function(){
 	Payment.cancel($scope.chosenBill.id)
 	.success(function(){
-		// $scope.showdetail($scope.chosenBill);
 		$scope.selectTable($scope.tableNow);
 	})
 }
@@ -418,20 +422,12 @@ $scope.time_convert = function(end, start){
 		end = new Date();
 	}
 	var total_time_stamp = end-start// new Date ((end - start));
-	// console.log(total_time_stamp);
 	total_time_stamp = ((total_time_stamp) / 3600)/1000;
-	// alert(total_time_stamp)
-	// var spentTime = {
-	// 	'hrs':total_time_stamp.getUTCHours(),
-	// 	'min':total_time_stamp.getUTCMinutes()
-	// }
-	// console.log(total_time_stamp);
+
 	var spentTime = {	
 		'hrs':total_time_stamp,
 		'min':total_time_stamp
-
 	}
-
 	return spentTime
 }
 
@@ -445,8 +441,13 @@ function timeConverter(UNIX_timestamp){
  }
 
 
-$scope.time_cost = function(spentTime){
-	var cost = spentTime.hrs * PER_HOURS;
+$scope.time_cost = function(spentTime, isMember){
+	console.log(isMember)
+	if(isMember){
+		var cost = spentTime.hrs * member.price
+	}else{
+		var cost = spentTime.hrs * PER_HOURS;
+	}
 	// cost += ((spentTime.min/60) * PER_HOURS);
 	// console.log(cost+'='+spentTime.hrs+'*'+PER_HOURS);
 	return cost;
@@ -456,13 +457,27 @@ $scope.reload = function(){
 
 }
 
+$scope.checkmembership = function(record){
+	Payment.membership_price(record.id)
+	.success(function(result){
+		console.log(result);
+		$scope.selectTable($scope.tableNow);
+	});
+}
+			// scope.membership_price = function(){
+			// 	var csrfmiddlewaretoken = '{{csrf_token}}';
+			// 		$http({method: "POST", url: "/counter/bill/remark/update/"+scope.record.id+'/', 
+			// 		data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
+			// 			   'remark':scope.record.remark
+			// 	}})
+			// }
+
+
 $scope.showdetail = function(record){
 
 	$scope.payTogetherFlag = false;
 
 	$scope.chosenBill = record;
-	// var total_time = Math.floor(Date.now() / 1000) - record.start_from
-
 	console.log(record);
 
 	if(record.end_time){
@@ -470,10 +485,8 @@ $scope.showdetail = function(record){
 	}else{
 		var total_time = (new Date().getTime()) - record.start_from
 	}
-	
 
-	// var total_time_stamp = end-start// new Date ((end - start));
-	// console.log(total_time_stamp);
+
 	total_time_stamp = ((total_time) / 3600)/1000;
 	var hrs = total_time_stamp;
 	var min = total_time_stamp;
@@ -484,7 +497,6 @@ $scope.showdetail = function(record){
 	  	$scope.chosenBill.total_amount = (hrs*PER_HOURS) //+ (min/60*PER_HOURS);
 	  	for(var i in $scope.chosenBill.orders){
 	  		for(var f in $scope.foods){
-	  			// console.log($scope.chosenBill.orders[k]);
 		  		if($scope.foods[f].id == $scope.chosenBill.orders[i] ){
 		  			totalFood += parseFloat($scope.foods[f].unit_price);
 		  			$scope.foodTotal = totalFood;
@@ -499,14 +511,13 @@ $scope.showdetail = function(record){
 	  	var orderList = [];
 	  	for(var k in $scope.chosenBill.orders){
 	  		for(var f in $scope.foods){
-	  			// console.log($scope.chosenBill.orders[k]);
 		  		if($scope.foods[f].id == $scope.chosenBill.orders[k] ){
-
 		  			orderList.push(
 		  				{
 		  					'id':$scope.foods[f].id,
 		  					'name':$scope.foods[f].name,
-		  					'unit_price':$scope.foods[f].unit_price
+		  					'unit_price':$scope.foods[f].unit_price,
+		  					'promotion_price':$scope.foods[f].promotion_price
 		  				})
 		  		}
 	  		}
@@ -528,12 +539,8 @@ $scope.showdetail = function(record){
 
 
 	  $scope.records = [];
-	  // Payment.all()
-	  // .success(function(data){
-	  // 	$scope.records = convertArray([data][0].records);
-	  // });
 	  $scope.selectTable($scope.tableNow);
-		// $scope.records = Payment.all();
-		// console.log($scope.records);
 	})
+
+
 // });

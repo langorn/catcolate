@@ -98,6 +98,14 @@ catcolateApp
 				data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
 					   'table_no':id
 			}})
+		},
+		membership_price:function(payment_id){
+			var csrfmiddlewaretoken = '{{csrf_token}}';
+			return $http({method: "POST", url: "/counter/bill/membership_price/", 
+				data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					   'payment_id':payment_id
+			}})
+
 		}
 	}
 });

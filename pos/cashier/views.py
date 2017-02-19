@@ -2,7 +2,7 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages 
 
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.core import serializers
 import json
 
@@ -17,10 +17,20 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from cashier.forms import PaymentRecordForm, OrderItemForm, OrderRecordForm
 from cashier.models import PaymentRecord, Product, OrderItem, OrderRecord, Product
+
 import datetime
 import time
 # Create your views here.
 PER_HRS = 6
+MEMBER_PRICE = 5
+
+###
+# state of pay_status
+# 0 = new created 
+# 1 = hold
+# 2 = payed
+# 3 = cancel bill
+###
 
 def dashboard(request):
 	return render(request, 'cashier.html')
@@ -149,14 +159,30 @@ def pay_bill(request):
 		payment.save()
 
 
+
+
 		total_amount = 0
 		orders = payment.orders.split(',')
-		if len(orders) > 1:
+		print len(orders)
+		if len(orders) > 0:
 			for order in orders:
 				product = Product.objects.get(pk=order)
-				total_amount += product.unit_price
-				orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
+
+				# if member , then discount the food
+				if payment.member_price is True:
+					food_price = product.promotion_price
+				else:
+					food_price = product.unit_price
+
+				total_amount += food_price
+				orderItem = OrderItem(product=product, unit_price=food_price, qty=1, payment_record=payment)
 				orderItem.save()
+
+
+		if payment.member_price is True:
+			per_hrs = MEMBER_PRICE
+		else:
+			per_hrs = PER_HRS
 
 		form = OrderRecord(
 			pay_status = payment.pay_status,
@@ -167,7 +193,7 @@ def pay_bill(request):
 			orders = payment.orders,
 			card_no = payment.card_no,
 			table_no = payment.table_no,
-			per_hrs = PER_HRS,
+			per_hrs = per_hrs,
 			total_amount = total_amount)
 		form.save()
 
@@ -183,7 +209,7 @@ def pay_table(request):
 	payment_set = json.loads(data)
 	table_no = payment_set['table_no']
 
-	payments = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no=table_no).filter(active=True)
+	payments = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no=table_no).filter(active=True).exclude(pay_status=2)
 
 	total_amount = 0
 	for payment in payments:
@@ -191,18 +217,35 @@ def pay_table(request):
 		payment.end_time = datetime.datetime.now()
 		payment.save()
 
+
 		orders = payment.orders.split(',')
-		if len(orders) > 1:
+		print "len->" + str(len(orders))
+		if len(orders) > 0:
 			for order in orders:
 				try:
 					product = Product.objects.get(pk=order)
-					total_amount += product.unit_price
-					orderItem = OrderItem(product=product, unit_price=product.unit_price, qty=1, payment_record=payment)
+
+					# if member, then discount the food order
+					if payment.member_price is True:
+						food_price = product.promotion_price
+					else:
+						food_price = product.unit_price
+
+
+					total_amount += food_price
+					orderItem = OrderItem(product=product, unit_price=food_price, qty=1, payment_record=payment)
 					orderItem.save()
 				except:
 					pass
 
+		else:
+			pass
 
+		# use member_price or not
+		if payment.member_price is True:
+			per_hrs = MEMBER_PRICE
+		else:
+			per_hrs = PER_HRS
 
 		form = OrderRecord(
 			pay_status = payment.pay_status,
@@ -213,7 +256,7 @@ def pay_table(request):
 			orders = payment.orders,
 			card_no = payment.card_no,
 			table_no = payment.table_no,
-			per_hrs = PER_HRS,
+			per_hrs = per_hrs,
 			total_amount = total_amount)
 		form.save()
 
@@ -265,7 +308,8 @@ def reconstruct(items):
 			'pay_status':item.pay_status,
 			'card_no':item.card_no,
 			'table_no':item.table_no,
-			'orders':item.orders
+			'orders':item.orders,
+			'member_price':item.member_price
 
 		}
 		# time.mktime(mydate.timetuple())
@@ -280,7 +324,8 @@ def food_construct(items):
 		record = {
 			'id': str(item.pk),
 			'name':item.name,
-			'unit_price':item.unit_price
+			'unit_price':item.unit_price,
+			'promotion_price':item.promotion_price
 
 		}
 		items_collections.append(record)
@@ -364,6 +409,38 @@ def foods(request):
 	result = food_construct(records)
 	response = JsonResponse({'records':result})
 	return response
+
+
+def best_sell(request):
+    records = []
+    products = Product.objects.all()
+    for product in products:
+        order = OrderItem.objects.filter(product=product).aggregate(Sum('unit_price'))
+        print '{}: {}'.format(product.name, order['unit_price__sum'])
+        record = {'name':product.name , 'price':order['unit_price__sum']}
+        records.append(record)
+    response = JsonResponse({'records':records})
+    return response
+
+def membership_price(request):
+	data = request.body.decode('utf-8')
+
+	payment_set = json.loads(data)
+	payment_id = payment_set['payment_id']
+
+	payment = PaymentRecord.objects.get(pk=payment_id)
+
+	if payment.member_price is False:
+		payment.member_price = True
+	else:
+		payment.member_price = False 
+	payment.save()
+	response = JsonResponse({'records':payment.member_price})
+
+	return response
+
+
+
 
 # def update_book(request,book_id):
 # 	book = Book.objects.get(pk=book_id)

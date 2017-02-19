@@ -17,6 +17,7 @@ class Product(models.Model):
 	# define the category ur self , 1= time, 2=drink, 3=food, 
 	category = models.CharField(max_length=200)
 	unit_price = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+	promotion_price = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 	active = models.BooleanField()
 	def __unicode__(self):
 		return '(%s)' % (self.name)
@@ -30,6 +31,7 @@ class PaymentRecord(models.Model):
 	card_no = models.IntegerField(max_length=8,default=0,null=True, blank=True)
 	table_no = models.IntegerField(max_length=8,default=0,null=True, blank=True)
 	pay_status = models.CharField(max_length=5,default="0")
+	member_price = models.BooleanField(default=False)
 	active = models.BooleanField(default=True)
 
 	def __unicode__(self):

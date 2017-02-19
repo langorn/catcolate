@@ -1,0 +1,51 @@
+.actionMenu{
+
+	display:inline-block;
+
+}
+
+.inlineBlock{
+
+	display:inline-block;
+
+}
+.print_bill{
+
+color:green;
+
+}
+
+@media screen
+	{
+	.print_bill{
+
+	color:green;
+
+	}
+	{
+		.showReceipt{
+			display:none;
+		}
+
+
+	}
+}
+@media print
+{
+
+	.noprint{
+		display:none;
+
+	}
+	header nav, footer {
+	display: none;
+	}
+
+
+	.print_bill{
+
+		color:red;
+	}
+}
+
+

@@ -39,7 +39,11 @@ urlpatterns = [
     url(r'^bill/move/(?P<payment_id>\d+)/$',views.move_table, name='move_table'),
 
     url(r'^bill/together/$', views.bill_together, name='bill_together'),
+    url(r'^bill/membership_price/$', views.membership_price, name='membership_price'),
 
+
+    #statistic
+    url(r'^best_sell/$', views.best_sell, name='best_sell'),
 
 
     url(r'^payments/$', views.payments, name='payments'),

@@ -1,4 +1,4 @@
-<div style="display:inline-block" ng-show="record.pay_status !=2 && record.pay_status!=3">
+<div class="noprint" style="display:inline-block" ng-show="record.pay_status !=2 && record.pay_status!=3">
 	<!-- <div ng-repeat="i in name"> -->
 		<!-- {{info.items[1]}} -->
 				<a class="ui red ribbon label">Card No {{record.card_no}}</a>
@@ -36,16 +36,23 @@
 				  </div>
 				  <div class="ui vertical labeled icon buttons">
 				    <div class="ui button" ng-click="addproduct()">
-				      <i class="add icon"></i>
+				      <i class="ui add icon"></i>
 				      Add Item
 				    </div>
+
+				    <!-- ng-class="apt.name.length >= 15 ? 'col-md-12' : (apt.name.length >= 10 ? 'col-md-6' : 'col-md-4')"> -->
+  <!-- ng-class="{true:'redFont',false:'blueFont'}[record.member_price]" -->
+				    <div class="ui button" ng-class="{true:'blue',false:'gray'}[record.member_price]"  ng-click="checkmembership(record)">
+				      <i class="ui add icon"></i>
+				       Member
+				    </div>
 				    <div class="ui button" ng-click="showdetail(record)">
-				      <i class="add icon"></i>
+				      <i class="ui add icon"></i>
 				      View
 				    </div>
 
 				    <div class="ui button" ng-click="changetable(record)">
-				      <i class="add icon"></i>
+				      <i class="ui add icon"></i>
 				      Change Table
 				    </div>
 
