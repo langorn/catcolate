@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^bill/card/update/(?P<payment_id>\d+)/$', views.card_update, name='card_update'),
     url(r'^bill/remark/update/(?P<payment_id>\d+)/$', views.remark_update, name='remark_update'),
 
+    url(r'^bill/hold_it/$', views.hold_it, name='hold_it'),
     url(r'^bill/hold/$', views.hold_bill, name='hold_bill'),
     url(r'^bill/hold_table/(?P<table_id>\d+)/$', views.hold_table, name='hold_table'),
 
@@ -44,6 +45,9 @@ urlpatterns = [
 
     #statistic
     url(r'^best_sell/$', views.best_sell, name='best_sell'),
+
+    #member
+    url(r'^add_member/$', views.add_member, name='add_member'),
 
 
     url(r'^payments/$', views.payments, name='payments'),

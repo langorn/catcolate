@@ -17,35 +17,34 @@ color:green;
 
 @media screen
 	{
-	.print_bill{
-
-	color:green;
-
-	}
-	{
+		.print_bill{
+			color:green;
+		}
 		.showReceipt{
 			display:none;
 		}
 
 
 	}
-}
 @media print
-{
+	{
 
-	.noprint{
-		display:none;
+		.noprint{
+			display:none;
 
+		}
+		header nav, footer {
+		display: none;
+		}
+
+
+		.print_bill{
+			text-align:left;
+			color:red;
+		}
+		.receipt{
+			text-align:left;
+		}
 	}
-	header nav, footer {
-	display: none;
-	}
-
-
-	.print_bill{
-
-		color:red;
-	}
-}
 
 

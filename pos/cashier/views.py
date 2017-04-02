@@ -15,7 +15,7 @@ from django.utils.functional import Promise
 from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
-from cashier.forms import PaymentRecordForm, OrderItemForm, OrderRecordForm
+from cashier.forms import PaymentRecordForm, OrderItemForm, OrderRecordForm, MemberForm
 from cashier.models import PaymentRecord, Product, OrderItem, OrderRecord, Product
 
 import datetime
@@ -90,6 +90,31 @@ def remark_update(request, payment_id):
 
 	return HttpResponse()
 
+def hold_it(request):
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	bill_id = payment_set['id']
+	# print bills
+	payment = PaymentRecord.objects.get(pk=bill_id)
+	# print payment.pay_status
+	if payment.pay_status == '0':
+		# print "not 2"
+		payment.pay_status = '1'
+		payment.end_time = datetime.datetime.now()
+		payment.save()
+	elif payment.pay_status == '1':
+		payment.pay_status = '0'
+		payment.end_time = datetime.datetime.now()
+		payment.save()
+	else:
+		print 'p'+ str(payment.pay_status)
+		pass
+	payment_state = {
+		'id':bill_id, 
+		'pay_status':payment.pay_status
+	}
+	response = JsonResponse({'data':payment_state})
+	return response
 
 def hold_bill(request):
 	data = request.body.decode('utf-8')
@@ -130,8 +155,9 @@ def hold_table(request,table_id):
 			payment.end_time = datetime.datetime.now()
 			payment.save()
 
-
-	return HttpResponse()
+	result = reconstruct(payments)
+	response = JsonResponse({'records':result})
+	return response
 
 
 def single_bill(request,payment_id):
@@ -309,7 +335,8 @@ def reconstruct(items):
 			'card_no':item.card_no,
 			'table_no':item.table_no,
 			'orders':item.orders,
-			'member_price':item.member_price
+			'member_price':item.member_price,
+			'pay_status':item.pay_status
 
 		}
 		# time.mktime(mydate.timetuple())
@@ -427,7 +454,7 @@ def membership_price(request):
 
 	payment_set = json.loads(data)
 	payment_id = payment_set['payment_id']
-
+	table_id = payment_set['table_id']
 	payment = PaymentRecord.objects.get(pk=payment_id)
 
 	if payment.member_price is False:
@@ -435,11 +462,33 @@ def membership_price(request):
 	else:
 		payment.member_price = False 
 	payment.save()
-	response = JsonResponse({'records':payment.member_price})
 
+
+	start_delta = datetime.datetime.now() - datetime.timedelta(0.5)
+	end_delta = datetime.datetime.now() + datetime.timedelta(0.5)
+
+	payments = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no=table_id).filter(active=True).filter(Q(pay_status="0") | Q(pay_status="1"))
+	result = reconstruct(payments)	
+	response = JsonResponse({'records':result})
+	# response = JsonResponse({'records':payment.member_price})
 	return response
 
 
+
+def add_member(request):
+
+	if request.method == 'POST':
+
+		form = MemberForm(request.POST)
+		if form.is_valid():
+			form.save()
+		else:
+			print "error"
+		return HttpResponseRedirect('/counter/add_member/')
+	else:
+		member_form = MemberForm()
+
+	return render(request, 'add_member.html', {'form':member_form})
 
 
 # def update_book(request,book_id):

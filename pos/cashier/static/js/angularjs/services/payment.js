@@ -29,7 +29,20 @@ catcolateApp
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 			return $http({method: "GET", url: "/counter/bill/view/"+id+"/"});
 		},
+		hold_it:function(id){
+			var csrfmiddlewaretoken = '{{csrf_token}}';
+
+			console.log(id);
+			return $http({method: "POST", url: "/counter/bill/hold_it/", 
+				data: {
+					'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					'id':id
+				}})
+
+		},
 		hold: function(bills){
+
+			//hold a serious of bill
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 
 			console.log(bills);
@@ -99,11 +112,12 @@ catcolateApp
 					   'table_no':id
 			}})
 		},
-		membership_price:function(payment_id){
+		membership_price:function(payment_id, table_id){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
 			return $http({method: "POST", url: "/counter/bill/membership_price/", 
 				data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
-					   'payment_id':payment_id
+					   'payment_id':payment_id,
+					   'table_id':table_id
 			}})
 
 		}

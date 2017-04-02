@@ -1,5 +1,5 @@
 from django import forms
-from cashier.models import PaymentRecord, OrderRecord, OrderItem
+from cashier.models import PaymentRecord, OrderRecord, OrderItem, Member
 
 
 class PaymentRecordForm(forms.ModelForm):
@@ -20,3 +20,9 @@ class OrderItemForm(forms.ModelForm):
 	class Meta:
 		model = OrderItem
 		fields = '__all__'
+
+
+class MemberForm(forms.ModelForm):
+	class Meta:
+		model = Member
+		exclude = ['active']

@@ -5,7 +5,13 @@ from django.db import models
 # Create your models here.
 
 class Member(models.Model):
-	name = models.CharField(max_length=200)
+	name = models.CharField(max_length=200,default='')
+	tel = models.CharField(max_length=200,default='')
+	ic = models.CharField(max_length=200,default='')
+	addr = models.CharField(max_length=200,default='')
+	gender = models.CharField(max_length=30, default=0)
+	member_id = models.CharField(max_length=20,default=10001)
+	active = models.BooleanField(default=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __unicode__(self):
