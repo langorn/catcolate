@@ -318,8 +318,17 @@ $scope.billTogether = function(member_id){
 	})
 	// alert($scope.payTogether);
 }
-
-$scope.bill_by_table = function(){
+$scope.bill_by_table_func= function(){
+	$scope.bill_by_table(function(){
+		var ans = confirm('Do you want to Hold Bill?');
+		if(ans){
+			$scope.hold_bills();
+		}else{
+			$scope.bill_by_table();
+		}
+	})
+}
+$scope.bill_by_table = function(callback){
 	$scope.payTogetherFlag = true;
 	console.log($scope.records);
 	$scope.selectTableUsers();
@@ -371,6 +380,10 @@ $scope.bill_by_table = function(){
 	// content = $('.food_receipt').html();
 	console.log(content);
 	$('.receipt').html(content);
+
+	if(callback){
+		callback();
+	}
 
 }
 

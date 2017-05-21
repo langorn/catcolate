@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+
+<div class="ui table" >
+	<form method="POST" action="/counter/add_member/">
+		{% csrf_token %} 
+	  {{form.as_p}}
+	  <input type="submit" class="ui button teal" value="Submit">
+
+	</form>
+</div>
+{% endblock %}
