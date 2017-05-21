@@ -114,7 +114,6 @@
 						<div class="showReceipt">
 								<div><b>Catcolate Board Game Space</b></div>
 								<div>46A, Jalan Pendekar 13, T.U.T.A</div>
-								<div>DATE: 2 April 2017</div>
 								<hr>
 
 							<div ng-repeat="bill in usersBill" style="border-bottom:1px dotted black;margin-bottom:20px;">
@@ -128,7 +127,7 @@
 											</tr>
 											<tr>
 												<td width="20%"><b>End At</b> </td>
-												<td width="20%">{{bill.endtime | date:"yyyy-MM-dd HH:mm:ss"}}</td>
+												<td width="20%">{{bill.end_time | date:"yyyy-MM-dd HH:mm:ss"}}</td>
 											</tr>
 											<tr>
 												<td width="20%"><b>Time Spent</b> </td>

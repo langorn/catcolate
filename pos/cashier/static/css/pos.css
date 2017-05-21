@@ -43,7 +43,14 @@ color:green;
 			color:red;
 		}
 		.receipt{
-			text-align:left;
+			all:initial;
+			/* font-size: 8pt !important; */
+		}
+		
+		.receipt table td{
+			
+			 font-family:serif,sans-serif,cursive,fantasy,monospace;
+			 /* font-size: 8pt !important; */
 		}
 	}
 
