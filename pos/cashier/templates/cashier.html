@@ -55,7 +55,7 @@
 
 				</div>
 			</div>
-			{% verbatim %} 
+			{% verbatim %}
 			<!-- <div class="ui five stackable cards"> -->
 			<!-- <td><payment id="item.id" name="item.name" edit="item.edit"></payment></td> -->
 			<!-- <payment record="record" name="record.member" end_time="record.end_time"></payment> upt="updateOpt()"-->
@@ -103,7 +103,7 @@
 					<td>
 						<div ng-repeat="bill in usersBill">
 							{{bill.time}}
-							hrs = RM {{bill.time_spent}}
+							= RM {{bill.time_spent}}
 						</div>
 					</td>
 				</tr>
@@ -132,7 +132,7 @@
 											</tr>
 											<tr>
 												<td width="20%"><b>Time Spent</b> </td>
-												<td width="20%">{{bill.time}} HRS </td>
+												<td width="20%">{{bill.time}} </td>
 											</tr>
 											<tr>
 												<td width="20%"><b>SubTotal</b> </td>
@@ -186,9 +186,9 @@
 						<div class="ui segment noprint" style="text-align:right">
 							Food: {{foodTotal | currency:"RM" }}<br>
 							<!-- Time : {{chosenBill.total_amount}}<br> -->
-							Time: {{totalAmount | currency:"RM"}} 
+							Time: {{totalAmount | currency:"RM"}}
 							<hr>
-							Total = {{foodAndTime | currency:"RM"}} 
+							Total = {{foodAndTime | currency:"RM"}}
 						</div>
 					</td>
 				</tr>
@@ -231,7 +231,7 @@
 		</tr>
 		<tr>
 			<td>End At</td>
-			<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}} 
+			<td>{{chosenBill.end_time  | date:"MM/dd/yyyy 'at' h:mma"}}
 				<div class="ui label">{{chosenBill.is_hold}}</div>
 			</td>
 		</tr>

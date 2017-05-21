@@ -55,10 +55,9 @@ Payment.foods()
 	// $scope.myfood = $scope.foods[1];
 })
 
-
 $scope.tables = [
-	{id:'0', name:'Non Specific'}, 
-	{id:'99', name:'Event'}, 
+	{id:'0', name:'Non Specific'},
+	{id:'99', name:'Event'},
 	{id:'1', name:'Table 1'},
 	{id:'2', name:'Table 2'},
 	{id:'3', name:'Table 3'},
@@ -70,8 +69,6 @@ $scope.tables = [
 	{id:'9', name:'Table 9'},
 	{id:'10', name:'Table 10'},
 ]
-
-
 
 // chosenBill state
 /*
@@ -91,7 +88,7 @@ chosenBill = {
 }
 */
 
-$scope.pay_state = 
+$scope.pay_state =
 [
 	{'0':'unpay'},
 	{'1':'time hold'},
@@ -101,7 +98,7 @@ $scope.pay_state =
 
 $scope.tableNow = 0 ;
 
-$scope.chosenBill = {}; // view the chosen bill 
+$scope.chosenBill = {}; // view the chosen bill
 
 $scope.payTogether = []; //
 $scope.payTogetherState = true;
@@ -264,7 +261,7 @@ $scope.clear_all = function(){
 	$('input[type=checkbox]').attr('checked',false);
 }
 
-//this is for after click the option 
+//this is for after click the option
 $scope.billTogether = function(member_id){
 
 	$scope.usersBill = [];
@@ -289,7 +286,7 @@ $scope.billTogether = function(member_id){
 			var foodPrice = 0; //each player's food total;
 			var subTotal = 0; // subtotal of food & time;
 			var timestamp = $scope.time_convert( $scope.together_bills[record].end_time,  $scope.together_bills[record].start_from);
-			
+
 			// if member , then pay member price
 			var time_spent = $scope.time_cost(timestamp, record.member_price);
 			var foodName = findFoodName($scope.together_bills[record], $scope.foods);
@@ -349,12 +346,12 @@ $scope.bill_by_table = function(){
 
 			$scope.foodTotal += parseFloat(foodName.orderName[f].unit_price);
 			foodPrice += parseFloat(foodName.orderName[f].unit_price);
-		
-		}
 
+		}
+		var displayTimeText = displayTime(timestamp.hrs);
 		var bill = {
 			'id': $scope.records[record].id,
-			'time':timestamp.hrs.toFixed(2), //+':'+timestamp.min,
+			'time':displayTimeText, //+':'+timestamp.min,
 			'start_from':$scope.records[record].start_from,
 			'end_time':$scope.records[record].end_time,
 			'time_spent':time_spent.toFixed(2),
@@ -375,6 +372,19 @@ $scope.bill_by_table = function(){
 	console.log(content);
 	$('.receipt').html(content);
 
+}
+
+function displayTime(timestamp){
+		var timestampText = "";
+		var hrs = parseInt(timestamp);
+		var min;
+		min = parseInt((timestamp % 1)*60);
+
+		if(min<10){
+			min = '0'+min;
+		}
+		timestampText = hrs + " hrs " + min + "min";
+		return timestampText;
 }
 
 //search the food return a object with price.
@@ -421,7 +431,7 @@ $scope.user_pay = function($index){
 	if(ans){
 		Payment.single_pay(payment_id)
 		.success(function(p_id){
-			$scope.usersBill.splice($index,1); 
+			$scope.usersBill.splice($index,1);
 			$scope.payTogether = [];
 			$scope.selectTable($scope.tableNow);
 		})
@@ -453,7 +463,7 @@ $scope.time_convert = function(end, start){
 	var total_time_stamp = end-start// new Date ((end - start));
 	total_time_stamp = ((total_time_stamp) / 3600)/1000;
 
-	var spentTime = {	
+	var spentTime = {
 		'hrs':total_time_stamp,
 		'min':total_time_stamp
 	}
@@ -497,7 +507,7 @@ $scope.checkmembership = function(record){
 }
 			// scope.membership_price = function(){
 			// 	var csrfmiddlewaretoken = '{{csrf_token}}';
-			// 		$http({method: "POST", url: "/counter/bill/remark/update/"+scope.record.id+'/', 
+			// 		$http({method: "POST", url: "/counter/bill/remark/update/"+scope.record.id+'/',
 			// 		data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
 			// 			   'remark':scope.record.remark
 			// 	}})
