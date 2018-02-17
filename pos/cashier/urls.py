@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^$',views.dashboard, name='index'),
     url(r'^bill/add/$', views.add_payment_record, name='add_bill'),
     url(r'^bill/update/(?P<payment_id>\d+)/$', views.edit_bill, name='edit_bill'),
+    url(r'^bill/change_time/(?P<payment_id>\d+)/$', views.change_time, name='change_time'),
+
     url(r'^bill/card/update/(?P<payment_id>\d+)/$', views.card_update, name='card_update'),
     url(r'^bill/remark/update/(?P<payment_id>\d+)/$', views.remark_update, name='remark_update'),
 
@@ -40,14 +42,16 @@ urlpatterns = [
     url(r'^bill/move/(?P<payment_id>\d+)/$',views.move_table, name='move_table'),
 
     url(r'^bill/together/$', views.bill_together, name='bill_together'),
-    url(r'^bill/membership_price/$', views.membership_price, name='membership_price'),
-
+    url(r'^bill/change_pricetype/(?P<price_type>\d+)/$', views.change_pricetype, name='change_pricetype'),
 
     #statistic
     url(r'^best_sell/$', views.best_sell, name='best_sell'),
 
     #member
     url(r'^add_member/$', views.add_member, name='add_member'),
+
+    #report
+    url(r'^reports/(?P<start_date>\d+)/(?P<end_date>\d+)/$', views.reports, name='reports'),
 
 
     url(r'^payments/$', views.payments, name='payments'),

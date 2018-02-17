@@ -36,15 +36,20 @@
 				  </div>
 				  <div class="ui vertical labeled icon buttons">
 				    <div class="ui button" ng-click="addproduct()">
-				      <i class="ui add icon"></i>
+				      <i class="announcement icon"></i>
+
 				      Add Item
 				    </div>
 
 				    <!-- ng-class="apt.name.length >= 15 ? 'col-md-12' : (apt.name.length >= 10 ? 'col-md-6' : 'col-md-4')"> -->
   <!-- ng-class="{true:'redFont',false:'blueFont'}[record.member_price]" -->
-				    <div class="ui button" ng-class="{true:'blue',false:'gray'}[record.member_price]"  ng-click="checkmembership(record)">
+				    <div class="ui button" ng-class="{2:'blue',1:'gray'}[record.price_type]"  ng-click="pricetype(record,2)">
 				      <i class="ui add icon"></i>
 				       Member
+				    </div>
+				    <div class="ui button" ng-class="{3:'orange',1:'gray'}[record.price_type]"  ng-click="pricetype(record,3)">
+				      <i class="ui add icon"></i>
+				       Cat Party
 				    </div>
 				    <div class="ui button" ng-click="showdetail(record)">
 				      <i class="ui add icon"></i>

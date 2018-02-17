@@ -23,7 +23,13 @@ import time
 # Create your views here.
 PER_HRS = 6
 MEMBER_PRICE = 5
+WOLF_PRICE = 4
 
+PRICE_TYPE = {
+	1:6,
+	2:5,
+	3:4
+}
 ###
 # state of pay_status
 # 0 = new created 
@@ -42,7 +48,6 @@ def add_payment_record(request):
 		data = request.body.decode('utf-8')
 		payment_set = json.loads(data)
 
-
 		form = PaymentRecordForm(request.POST)
 		if form.is_valid():
 			newbook = form.save(commit=False)
@@ -52,6 +57,7 @@ def add_payment_record(request):
 			newbook.pay_status = 0
 			newbook.card_no = 0
 			newbook.table_no = payment_set['table_no']
+			newbook.price_type = "1"
 			# newbook.active = True
 			newbook.save()
 		else:
@@ -68,6 +74,20 @@ def edit_bill(request,payment_id):
 	order_list = ','.join(map(str,payment_set['orders']))
 
 	payment.orders = order_list
+	payment.save()
+
+	return HttpResponse()
+
+def change_time(request, payment_id):
+	payment = PaymentRecord.objects.get(pk=1)
+	data = request.body.decode('utf-8')
+	payment_set = json.loads(data)
+	print payment_set
+	payment.start_from = payment_set['time']
+	# order_list = ','.join(map(str,payment_set['orders']))
+	# console.log(order_list)
+	# console.log(payment_set)
+	# payment.orders = order_list
 	payment.save()
 
 	return HttpResponse()
@@ -185,8 +205,6 @@ def pay_bill(request):
 		payment.save()
 
 
-
-
 		total_amount = 0
 		orders = payment.orders.split(',')
 		print len(orders)
@@ -195,7 +213,7 @@ def pay_bill(request):
 				product = Product.objects.get(pk=order)
 
 				# if member , then discount the food
-				if payment.member_price is True:
+				if payment.price_type == 1:
 					food_price = product.promotion_price
 				else:
 					food_price = product.unit_price
@@ -204,12 +222,8 @@ def pay_bill(request):
 				orderItem = OrderItem(product=product, unit_price=food_price, qty=1, payment_record=payment)
 				orderItem.save()
 
-
-		if payment.member_price is True:
-			per_hrs = MEMBER_PRICE
-		else:
-			per_hrs = PER_HRS
-
+		per_hrs = get_price_hrs(payment.price_type)
+		console.log(per_hrs);
 		form = OrderRecord(
 			pay_status = payment.pay_status,
 			member = payment.member,
@@ -224,6 +238,9 @@ def pay_bill(request):
 		form.save()
 
 	return HttpResponse()
+
+def get_price_hrs(request, price_type):
+	return PRICE_TYPE[price_type]
 
 def pay_table(request):
 
@@ -252,11 +269,10 @@ def pay_table(request):
 					product = Product.objects.get(pk=order)
 
 					# if member, then discount the food order
-					if payment.member_price is True:
+					if payment.price_type == 1:
 						food_price = product.promotion_price
 					else:
 						food_price = product.unit_price
-
 
 					total_amount += food_price
 					orderItem = OrderItem(product=product, unit_price=food_price, qty=1, payment_record=payment)
@@ -268,11 +284,12 @@ def pay_table(request):
 			pass
 
 		# use member_price or not
-		if payment.member_price is True:
-			per_hrs = MEMBER_PRICE
-		else:
-			per_hrs = PER_HRS
-
+		# if payment.member_price is True:
+		# 	per_hrs = MEMBER_PRICE
+		# else:
+		# 	per_hrs = PER_HRS
+		per_hrs = get_price_hrs(payment.price_type)
+		console.log(per_hrs);
 		form = OrderRecord(
 			pay_status = payment.pay_status,
 			member = payment.member,
@@ -336,11 +353,11 @@ def reconstruct(items):
 			'table_no':item.table_no,
 			'orders':item.orders,
 			'member_price':item.member_price,
-			'pay_status':item.pay_status
+			'pay_status':item.pay_status,
+			'price_type':item.price_type
 
 		}
 		# time.mktime(mydate.timetuple())
-
 		items_collections.append(record)
 	return items_collections
 
@@ -389,10 +406,8 @@ def bill_together(request):
 def get_table(request, table_id):
 	table_id = str(table_id)
 
-	
 	start_delta = datetime.datetime.now() - datetime.timedelta(0.5)
 	end_delta = datetime.datetime.now() + datetime.timedelta(0.5)
-
 
 
 	if table_id == "0" or table_id == "99":
@@ -449,20 +464,18 @@ def best_sell(request):
     response = JsonResponse({'records':records})
     return response
 
-def membership_price(request):
+def change_pricetype(request, price_type):
 	data = request.body.decode('utf-8')
-
 	payment_set = json.loads(data)
 	payment_id = payment_set['payment_id']
 	table_id = payment_set['table_id']
 	payment = PaymentRecord.objects.get(pk=payment_id)
 
-	if payment.member_price is False:
-		payment.member_price = True
+	if price_type == payment.price_type:
+		payment.price_type = 1
 	else:
-		payment.member_price = False 
+		payment.price_type = price_type
 	payment.save()
-
 
 	start_delta = datetime.datetime.now() - datetime.timedelta(0.5)
 	end_delta = datetime.datetime.now() + datetime.timedelta(0.5)
@@ -490,6 +503,13 @@ def add_member(request):
 
 	return render(request, 'add_member.html', {'form':member_form})
 
+
+def reports(request, start_date, end_date):
+	if request.method == 'POST':
+		payments = PaymentRecord.objects.filter(start_from__gte=start_delta, start_from__lte=end_delta).filter(table_no=table_id).filter(active=True).filter(Q(pay_status="0") | Q(pay_status="1"))
+	else:
+		pass
+	return render(request, 'reports.html')
 
 # def update_book(request,book_id):
 # 	book = Book.objects.get(pk=book_id)

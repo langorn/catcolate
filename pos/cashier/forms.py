@@ -7,7 +7,7 @@ class PaymentRecordForm(forms.ModelForm):
     class Meta:
         model = PaymentRecord
         #my form dont want contain the following fields
-        exclude = ['active','pay_status']
+        exclude = ['active','pay_status','price_type']
 
 
 class OrderRecordForm(forms.ModelForm):

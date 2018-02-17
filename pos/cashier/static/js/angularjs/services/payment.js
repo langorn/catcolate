@@ -112,13 +112,22 @@ catcolateApp
 					   'table_no':id
 			}})
 		},
-		membership_price:function(payment_id, table_id){
+		change_pricetype: function(payment_id, table_id, price_type){
 			var csrfmiddlewaretoken = '{{csrf_token}}';
-			return $http({method: "POST", url: "/counter/bill/membership_price/", 
+			return $http({method: "POST", url: "/counter/bill/change_pricetype/"+price_type+"/", 
 				data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
 					   'payment_id':payment_id,
 					   'table_id':table_id
 			}})
+		},
+		change_time: function(payment_id, timestamps){
+			var csrfmiddlewaretoken = '{{csrf_token}}';
+			return $http({method: "POST", url: "/counter/bill/change_time/"+String(payment_id)+"/", 
+				data: {'csrfmiddlewaretoken':csrfmiddlewaretoken,
+					   'payment_id':payment_id,
+					   'time': timestamps
+			}})
+
 
 		}
 	}

@@ -9,6 +9,12 @@ var member = {
 	'promotion':2
 }
 
+var priceList = {
+	1:6,
+	2:5,
+	3:4
+}
+
 var catcolateApp = angular.module('catcolateApp', []);
 
 catcolateApp.config(['$httpProvider',
@@ -288,7 +294,7 @@ $scope.billTogether = function(member_id){
 			var timestamp = $scope.time_convert( $scope.together_bills[record].end_time,  $scope.together_bills[record].start_from);
 
 			// if member , then pay member price
-			var time_spent = $scope.time_cost(timestamp, record.member_price);
+			var time_spent = $scope.time_cost(timestamp, record.price_type);
 			var foodName = findFoodName($scope.together_bills[record], $scope.foods);
 			console.log(foodName);
 
@@ -340,11 +346,12 @@ $scope.bill_by_table = function(callback){
 	for(var record in $scope.records){
 
 		var isMember = $scope.records[record].member_price;
+		var priceType = $scope.records[record].price_type
 		var foodPrice = 0; //each player's food total;
 		var subTotal = 0; // subtotal of food & time;
 		var timestamp = $scope.time_convert( $scope.records[record].end_time,  $scope.records[record].start_from);
 		// if member , then pay member price
-		var time_spent = $scope.time_cost(timestamp, isMember);
+		var time_spent = $scope.time_cost(timestamp, priceType);
 		var foodName = findFoodName($scope.records[record], $scope.foods);
 
 		// console.log(foodName);
@@ -378,7 +385,6 @@ $scope.bill_by_table = function(callback){
 	$('.receipt').html('');
 	var content = $('.showReceipt').html();
 	// content = $('.food_receipt').html();
-	console.log(content);
 	$('.receipt').html(content);
 
 	if(callback){
@@ -409,11 +415,14 @@ function findFoodName(record, foods){
   		for(var f in foods){
 	  		if($scope.foods[f].id == record.orders[k] ){
 
-	  			if(record.member_price){
-	  				var price = $scope.foods[f].promotion_price
-	  			}else{
-	  				var price = $scope.foods[f].unit_price
-	  			}
+				var priceType = record.price_type;
+				var price;
+				if(record.price_type==1){
+					price = $scope.foods[f].promotion_price;
+				}else{
+					price = $scope.foods[f].unit_price;
+				}
+
 	  			orderList.push(
 	  				{
 	  					'id':$scope.foods[f].id,
@@ -493,20 +502,40 @@ function timeConverter(UNIX_timestamp){
  }
 
 
-$scope.time_cost = function(spentTime, isMember){
-	console.log(isMember)
-	if(isMember){
-		var cost = spentTime.hrs * member.price
-	}else{
-		var cost = spentTime.hrs * PER_HOURS;
-	}
+$scope.time_cost = function(spentTime, priceType){
+	var cost = spentTime.hrs * priceList[priceType];
 	// cost += ((spentTime.min/60) * PER_HOURS);
 	// console.log(cost+'='+spentTime.hrs+'*'+PER_HOURS);
 	return cost;
 }
 
 $scope.reload = function(){
+}
 
+$scope.editTime = function(id){
+	var newTime = [];
+	let timestamp;
+	var ans = prompt('Insert the time you want to change : 2330 (format)')
+
+	if(ans){
+		newTime = [ans.slice(0,2), ans.slice(2)];
+		console.log(newTime);
+
+		let today = new Date();
+		today.setHours(0, 0, 0, 0);
+		console.log(today)
+		timestamp = today.getTime() + ( 60 * 60 * newTime[0] *1000 ) + ( 60 * newTime[1] *1000 );
+		console.log(timestamp);
+		console.log(new Date(timestamp));
+		timestamp = new Date(timestamp);
+		Payment.change_time(id, timestamp)
+		.success(function(data){
+			$scope.records = convertArray([data][0].records);
+			$scope.selectTable($scope.tableNow);
+
+			// $scope.bill_by_table()
+		})
+	}
 }
 
 $scope.checkmembership = function(record){
@@ -525,6 +554,17 @@ $scope.checkmembership = function(record){
 			// 			   'remark':scope.record.remark
 			// 	}})
 			// }
+
+$scope.pricetype = function(record, price_type){
+	Payment.change_pricetype(record.id, $scope.tableNow, price_type)
+	.success(function(data){
+		// console.log(result);
+		$scope.records = convertArray([data][0].records);
+		// $scope.selectTable($scope.tableNow);
+		$scope.bill_by_table()
+	});
+}
+
 
 
 $scope.showdetail = function(record){
@@ -548,13 +588,15 @@ $scope.showdetail = function(record){
 	$scope.chosenBill.spent = hrs.toFixed(2); //+':'+min;
 	  	// calculate the total amount
 	  	var totalFood = 0;
-	  	$scope.chosenBill.total_amount = (hrs*PER_HOURS) //+ (min/60*PER_HOURS);
+	  	let hourRate = priceList[record.price_type];
+
+	  	$scope.chosenBill.total_amount = (hrs*hourRate) //+ (min/60*PER_HOURS);
 	  	for(var i in $scope.chosenBill.orders){
 	  		for(var f in $scope.foods){
-		  		if($scope.foods[f].id == $scope.chosenBill.orders[i] ){
-		  			totalFood += parseFloat($scope.foods[f].unit_price);
-		  			$scope.foodTotal = totalFood;
-		  		}
+	  			if($scope.foods[f].id == $scope.chosenBill.orders[i] ){
+	  				totalFood += parseFloat($scope.foods[f].unit_price);
+	  				$scope.foodTotal = totalFood;
+	  			}
 	  		}
 	  	}
 	  	$scope.chosenBill.foodAmount = totalFood;
@@ -565,15 +607,15 @@ $scope.showdetail = function(record){
 	  	var orderList = [];
 	  	for(var k in $scope.chosenBill.orders){
 	  		for(var f in $scope.foods){
-		  		if($scope.foods[f].id == $scope.chosenBill.orders[k] ){
-		  			orderList.push(
-		  				{
-		  					'id':$scope.foods[f].id,
-		  					'name':$scope.foods[f].name,
-		  					'unit_price':$scope.foods[f].unit_price,
-		  					'promotion_price':$scope.foods[f].promotion_price
-		  				})
-		  		}
+	  			if($scope.foods[f].id == $scope.chosenBill.orders[k] ){
+	  				orderList.push(
+	  				{
+	  					'id':$scope.foods[f].id,
+	  					'name':$scope.foods[f].name,
+	  					'unit_price':$scope.foods[f].unit_price,
+	  					'promotion_price':$scope.foods[f].promotion_price
+	  				})
+	  			}
 	  		}
 	  	}
 	  	$scope.chosenBill.orderName = orderList
@@ -594,7 +636,7 @@ $scope.showdetail = function(record){
 
 	  $scope.records = [];
 	  $scope.selectTable($scope.tableNow);
-	})
+})
 
 
 // });

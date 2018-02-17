@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+{% if messages %}
+{% for message in messages %}
+{{message}}
+{% endfor %}
+{% endif %}
+
+
+<div class="container noprint" ng-app="catcolateApp">
+	<div class="ui grid" ng-controller="counterController" >
+
+<style>
+.redFont{
+	margin-top:20px;
+}
+.blueFont{
+	margin-bottom:20px;
+}
+</style>
+		<div class="two wide column noprint">
+
+		</div>
+		<div class="twelve wide column noprint ui segment">
+		</div>
+
+<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script> -->
+
+<script type="text/javascript" src="{% static "js/angularjs/controller/counter.js" %}"></script>
+<script type="text/javascript" src="{% static "js/angularjs/services/payment.js" %}"></script>
+<script type="text/javascript" src="{% static "js/angularjs/directive/payment.js" %}"></script>
+
+{% load static %}
+<script type="text/javascript" src='{% static 'jquery/dist/jquery.min.js' %}'></script>
+<script type="text/javascript" src='{% static 'pickadate/lib/picker.js' %}'></script>
+
+<script type="text/javascript" src='{% static 'pickadate/lib/picker.date.js' %}'></script>
+<script>
+
+
+$('.datepicker').pickadate()
+
+
+</script>
+
+{% endblock %}

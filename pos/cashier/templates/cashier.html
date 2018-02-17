@@ -59,7 +59,7 @@
 			<!-- <div class="ui five stackable cards"> -->
 			<!-- <td><payment id="item.id" name="item.name" edit="item.edit"></payment></td> -->
 			<!-- <payment record="record" name="record.member" end_time="record.end_time"></payment> upt="updateOpt()"-->
-			<payment ng-repeat="record in records" record="record" myfood="myfood" foods="foods" viewdetail="viewdetail(record)" addproduct="addPayment(record)" paynow="paynow(record)" showdetail="showdetail(record)" update_card_no="update_card_no(record)" checkmembership="checkmembership" payalone="payTogetherState" paytogether="payTogether" billtogether="billTogether" changetable="changeTable(record)"></payment>
+			<payment ng-repeat="record in records" record="record" myfood="myfood" foods="foods" viewdetail="viewdetail(record)" addproduct="addPayment(record)" paynow="paynow(record)" showdetail="showdetail(record)" update_card_no="update_card_no(record)" pricetype="pricetype" payalone="payTogetherState" paytogether="payTogether" billtogether="billTogether" changetable="changeTable(record)"></payment>
 			<!-- </div> -->
 			{% endverbatim %}
 
@@ -103,7 +103,7 @@
 					<td>
 						<div ng-repeat="bill in usersBill">
 							{{bill.time}}
-							= RM {{bill.time_spent}}
+							= RM {{bill.time_spent}} <button class="ui button" ng-click="editTime(bill.id)">Edit</button>
 						</div>
 					</td>
 				</tr>
@@ -238,7 +238,7 @@
 			<td>Orders</td>
 			<td>{{chosenBill.orders}}
 				<div ng-repeat="i in chosenBill.orderName">
-					{{i.name}}  - {{i.unit_price | currency}}
+					{{i.name}}  - {{i.unit_price | currency}} 
 				</div>
 			</td>
 		</tr>
@@ -278,13 +278,21 @@
 <script type="text/javascript" src="{% static "js/angularjs/services/payment.js" %}"></script>
 <script type="text/javascript" src="{% static "js/angularjs/directive/payment.js" %}"></script>
 
+{% load static %}
+<script type="text/javascript" src='{% static 'jquery/dist/jquery.min.js' %}'></script>
+<script type="text/javascript" src='{% static 'pickadate/lib/picker.js' %}'></script>
 
+<script type="text/javascript" src='{% static 'pickadate/lib/picker.date.js' %}'></script>
 <script>
 $(function(){
 	$('#addItem').click(function(){
 		$('.orderItem').append('<select><option> -- Please Select -- </option><option> Orange Juice  </option><option> Apple Pie </option></select>');
 	});
 })
+
+
+$('.datepicker').pickadate()
+
 
 </script>
 

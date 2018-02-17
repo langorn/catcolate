@@ -12,7 +12,7 @@ catcolateApp.directive('payment', function($http){
 			billtogether:"=",
 			foods:'=',
 			record:"=",
-			checkmembership:"=",
+			pricetype:"=",
 			addproduct:"&",
 			paynow:"&",
 			showdetail:"&",
