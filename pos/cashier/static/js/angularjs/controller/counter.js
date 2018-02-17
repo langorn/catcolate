@@ -527,7 +527,7 @@ $scope.editTime = function(id){
 		timestamp = today.getTime() + ( 60 * 60 * newTime[0] *1000 ) + ( 60 * newTime[1] *1000 );
 		console.log(timestamp);
 		console.log(new Date(timestamp));
-		timestamp = new Date(timestamp - (today.getTimezoneOffset()*60000) );
+		timestamp = new Date(timestamp);
 
 		Payment.change_time(id, timestamp)
 		.success(function(data){
