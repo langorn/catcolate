@@ -20,10 +20,12 @@
 	margin-bottom:20px;
 }
 </style>
-		<div class="two wide column noprint">
+		<div class="two wide column">
 
 		</div>
-		<div class="twelve wide column noprint ui segment">
+		<div class="twelve wide column ui segment">
+			<div class="start_date"></div>
+			<div class="end_date"></div>
 		</div>
 
 <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script> -->
@@ -38,10 +40,12 @@
 
 <script type="text/javascript" src='{% static 'pickadate/lib/picker.date.js' %}'></script>
 <script>
+	$(function(){
 
+		$('.start_date').pickadate();
+		$('.end_date').pickadate();
 
-$('.datepicker').pickadate()
-
+	})
 
 </script>
 
