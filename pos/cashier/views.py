@@ -79,7 +79,7 @@ def edit_bill(request,payment_id):
 	return HttpResponse()
 
 def change_time(request, payment_id):
-	payment = PaymentRecord.objects.get(pk=1)
+	payment = PaymentRecord.objects.get(pk=payment_id)
 	data = request.body.decode('utf-8')
 	payment_set = json.loads(data)
 	print payment_set
