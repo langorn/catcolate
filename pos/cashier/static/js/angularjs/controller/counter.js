@@ -528,6 +528,7 @@ $scope.editTime = function(id){
 		console.log(timestamp);
 		console.log(new Date(timestamp));
 		timestamp = new Date(timestamp);
+
 		Payment.change_time(id, timestamp)
 		.success(function(data){
 			$scope.records = convertArray([data][0].records);
